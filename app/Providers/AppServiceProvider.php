@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+
+        $this->setDbConfig();
     }
+
+    /**
+     * determind length of character used in db
+     */
+    private function setDbConfig()
+    {
+        Schema::defaultStringLength(191);
+    }
+
+
 }
