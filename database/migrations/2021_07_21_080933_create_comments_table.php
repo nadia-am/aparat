@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVideoFavouritesTable extends Migration
+class CreateCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateVideoFavouritesTable extends Migration
      */
     public function up()
     {
-        Schema::create('video_favourites', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')
                 ->constrained('users')
@@ -25,8 +25,17 @@ class CreateVideoFavouritesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
+            $table->unsignedBigInteger('parent_id')
+            ->nullable();
+
+
             $table->timestamps();
 
+            $table->foreign('parent_id')
+                ->references('id')
+                ->on('comments')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
         });
     }
@@ -38,6 +47,6 @@ class CreateVideoFavouritesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('video_favourites');
+        Schema::dropIfExists('comments');
     }
 }

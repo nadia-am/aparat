@@ -33,8 +33,8 @@ class CreateVideosTable extends Migration
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onUpdate('set null')
-                ->onDelete('cascade');
+                ->onDelete('set null')
+                ->onUpdate('cascade');
         });
     }
 
