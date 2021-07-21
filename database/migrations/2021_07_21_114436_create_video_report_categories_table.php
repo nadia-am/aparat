@@ -15,6 +15,7 @@ class CreateVideoReportCategoriesTable extends Migration
     {
         Schema::create('video_report_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('title',100);
             $table->timestamps();
         });
     }
