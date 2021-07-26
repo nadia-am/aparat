@@ -118,5 +118,6 @@ return [
     */
 
     'password_timeout' => 10800,
+    'resend_verification_code_in_minuts'=>env('RESENT_VERIFICATION_CODE' ,60),
 
 ];

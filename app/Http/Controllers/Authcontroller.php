@@ -6,6 +6,7 @@ use App\Exceptions\RegisterVerificationException;
 use App\Exceptions\UserAlreadyRegisterException;
 use App\Http\Requests\Auth\RegisterNewUserRequest;
 use App\Http\Requests\Auth\RegisterVerifyUserRequest;
+use App\Http\Requests\Auth\ResendVerificationCodeRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class Authcontroller extends Controller
 
         $user = User::where($field,$value)->first();
         if (!$user){
-            $code = rand(10000,99999);
+            $code =  random_verification_code();
             $user = User::create([
                 $field => $value,
                 'verify_code' => $code,
@@ -38,7 +39,7 @@ class Authcontroller extends Controller
             if ($user->verified_at){
                 throw new UserAlreadyRegisterException('شما قبلا ثبت نام کرده اید!');
             }
-            $code = rand(10000,99999);
+            $code =  random_verification_code();
             $user->verify_code = $code;
             $user->save();
             return response(['message'=>'کد فعالسازی مجددا برای شما ارسال گردید.'],200);
@@ -76,8 +77,24 @@ class Authcontroller extends Controller
         return response($user,200);
     }
 
-    public function resendVerificationCode()
+    public function resendVerificationCode(ResendVerificationCodeRequest $request)
     {
+        $field = $request->getField();
+        $value = $request->getFieldValue();
 
+        $user = User::where($field,$value)->whereNull('verified_at')->first();
+        if (!empty($user)){
+            $dateDiff = now()->diffInMinutes($user->updated_at);
+            if ($dateDiff > config('auth.resend_verification_code_in_minuts',60)){
+                $code = random_verification_code();
+                $user->verify_code = $code;
+                $user->save();
+            }
+            Log::info('resend-register-code-message-to-user',['code',$user->verify_code ]);
+            return response([
+                'message'=>'کد مجددا برای شما ارسال گردید.'
+            ],200);
+        }
+        throw new ModelNotFoundException('کاربری با این مشخصات یافت نشد یا قبلا فعالسازی شده است!');
     }
 }
