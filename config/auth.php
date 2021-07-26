@@ -103,9 +103,9 @@ return [
     'token_expiration'=>[
         'token'=>env('EXPIRATION_TOKEN' ,14400),
         'refresh_token'=>env('REFRESH_TOKEN' ,43200)
-
     ],
-
+    // cache expire time for an hour in minths
+    'register_cache_expiration'=> env('EXPIRATION_REGISTER' ,1440),
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
