@@ -53,6 +53,11 @@ class User extends Authenticatable
         'verified_at' => 'datetime',
     ];
 
+    public function channel()
+    {
+        return $this->hasOne(Channel::class);
+    }
+
     public function findForPassport($username)
     {
         $user = static::where('mobile',$username)->orWhere('email',$username)->first();

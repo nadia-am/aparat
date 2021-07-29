@@ -33,8 +33,20 @@ Route::post('resend-verification-code',[
     'as'=>'auth.register.resnd.verification.code',
     'uses'=>'App\Http\Controllers\Authcontroller@resendVerificationCode',
 ]);
+Route::post('change-email',[
+    'middleware'=>['auth:api'],
+    'as'=>'change.email',
+    'uses'=>'App\Http\Controllers\UserController@changeEmail',
+//    'uses'=> function(){
+//    dd('okay');
+//    }
+]);
+Route::post('change-email-submit',[
+    'middleware'=>['auth:api'],
+    'as'=>'change.email',
+    'uses'=>'App\Http\Controllers\UserController@changeEmailSubmit'
+]);
 
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});

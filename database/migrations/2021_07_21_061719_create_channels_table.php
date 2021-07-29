@@ -19,7 +19,8 @@ class CreateChannelsTable extends Migration
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->text('info');
+            $table->string('name');
+            $table->text('info')->nullable();
             $table->string('banner')->nullable();
             $table->string('social')->nullable();
 
