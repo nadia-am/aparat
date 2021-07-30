@@ -12,4 +12,9 @@ class Channel extends Model
     protected $fillable =[
         'user_id','name','info','banner','social'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -1,52 +1,49 @@
 <?php
 
-use App\Http\Controllers\Authcontroller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-Route::group(['namespace'=>'\Laravel\Passport\Http\Controllers'],function ($router){
-    $router->post('login',[
-        'as'=>'auth.login',
-        'middleware'=>['throttle'],
-        'uses'=>'AccessTokenController@issueToken'
+/**
+ * Contain Auth routes
+ *
+ * */
+Route::group([],function ($router){
+    $router->group(['namespace'=>'\Laravel\Passport\Http\Controllers'],function ($router){
+        $router->post('login',[
+            'as'=>'auth.login',
+            'middleware'=>['throttle'],
+            'uses'=>'AccessTokenController@issueToken'
+        ]);
+    });
+    $router->post('register',[
+        'as'=>'auth.register',
+        'uses'=>'App\Http\Controllers\Authcontroller@register',
+    ]);
+    $router->post('register-verify',[
+        'as'=>'auth.register.verify',
+        'uses'=>'App\Http\Controllers\Authcontroller@registerVerify',
+    ]);
+    $router->post('resend-verification-code',[
+        'as'=>'auth.register.resnd.verification.code',
+        'uses'=>'App\Http\Controllers\Authcontroller@resendVerificationCode',
     ]);
 });
-Route::post('register',[
-    'as'=>'auth.register',
-    'uses'=>'App\Http\Controllers\Authcontroller@register',
-]);
-Route::post('register-verify',[
-    'as'=>'auth.register.verify',
-    'uses'=>'App\Http\Controllers\Authcontroller@registerVerify',
-]);
-Route::post('resend-verification-code',[
-    'as'=>'auth.register.resnd.verification.code',
-    'uses'=>'App\Http\Controllers\Authcontroller@resendVerificationCode',
-]);
-Route::post('change-email',[
-    'middleware'=>['auth:api'],
-    'as'=>'change.email',
-    'uses'=>'App\Http\Controllers\UserController@changeEmail',
-//    'uses'=> function(){
-//    dd('okay');
-//    }
-]);
-Route::post('change-email-submit',[
-    'middleware'=>['auth:api'],
-    'as'=>'change.email',
-    'uses'=>'App\Http\Controllers\UserController@changeEmailSubmit'
-]);
+/**
+ * User's Route
+ * */
+Route::group(['middleware'=>['auth:api']],function ($router){
+    $router->post('change-email',[
+        'as'=>'change.email',
+        'uses'=>'App\Http\Controllers\UserController@changeEmail',
+    ]);
+    $router->post('change-email-submit',[
+        'as'=>'change.email',
+        'uses'=>'App\Http\Controllers\UserController@changeEmailSubmit'
+    ]);
+});
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router){
+    $router->put('/{id?}',[
+        'as'=>'channel.update',
+        'uses'=>'App\Http\Controllers\ChannelController@update'
+    ]);
+});
