@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
+/public/channel-banner
 /storage/*.key
 /vendor
 .env

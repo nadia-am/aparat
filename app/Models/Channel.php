@@ -17,4 +17,14 @@ class Channel extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function setSocialAttribute($value)
+    {
+        if (is_array($value)) $value = json_encode($value);
+        $this->attributes['social'] = $value;
+    }
+    public function getSocialAttribute()
+    {
+        return json_decode($this->attributes['social'],true);
+    }
 }

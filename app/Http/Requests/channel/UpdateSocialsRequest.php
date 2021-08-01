@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateChannelRequest extends FormRequest
+class UpdateSocialsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,9 +15,6 @@ class UpdateChannelRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->route()->hasParameter('id') && auth()->user()->type != User::TYPES_ADMIN){
-            return false;
-        }
         return true;
     }
 
@@ -29,9 +26,10 @@ class UpdateChannelRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'=>'required|string:255',
-            'website'=>'url|max:255|nullable',
-            'info'=>'string|nullable'
+            'facebook'=>'nullable|url',
+            'twitter'=>'nullable|url',
+            'instagram'=>'nullable|url',
+            'telegram'=>'nullable|url',
         ];
     }
 }

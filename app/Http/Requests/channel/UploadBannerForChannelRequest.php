@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\channel;
 
-use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateChannelRequest extends FormRequest
+class UploadBannerForChannelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,9 +13,6 @@ class UpdateChannelRequest extends FormRequest
      */
     public function authorize()
     {
-        if ($this->route()->hasParameter('id') && auth()->user()->type != User::TYPES_ADMIN){
-            return false;
-        }
         return true;
     }
 
@@ -29,9 +24,7 @@ class UpdateChannelRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'=>'required|string:255',
-            'website'=>'url|max:255|nullable',
-            'info'=>'string|nullable'
+            'banner'=>'required|image|max:1024'
         ];
     }
 }

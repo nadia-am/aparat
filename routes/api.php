@@ -46,4 +46,12 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
         'as'=>'channel.update',
         'uses'=>'App\Http\Controllers\ChannelController@update'
     ]);
+    $router->post('/',[
+        'as'=>'channel.upload.banner',
+        'uses'=>'App\Http\Controllers\ChannelController@uploadBanner'
+    ]);
+    $router->match(['post','put'],'/socials',[
+        'as'=>'channel.update.socials',
+        'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
+    ]);
 });
