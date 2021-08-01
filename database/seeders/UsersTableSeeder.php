@@ -20,6 +20,9 @@ class UsersTableSeeder extends Seeder
 
     private function CreateAdminUser()
     {
+        if (User::count()){
+            User::truncate();
+        }
         User::factory()->make([
             'name' => 'admin',
             'mobile'=>'+989112223344',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Requests\user\ChangeEmailRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -69,6 +70,8 @@ class User extends Authenticatable
         $mobile = to_valid_mobile_number($value);
         $this->attributes['mobile'] = $mobile;
     }
+
+
 }
 
 

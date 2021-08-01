@@ -39,8 +39,14 @@ Route::group(['middleware'=>['auth:api']],function ($router){
         'as'=>'change.email',
         'uses'=>'App\Http\Controllers\UserController@changeEmailSubmit'
     ]);
+    $router->post('/change-password',[
+        'as'=>'password.change',
+        'uses'=>'App\Http\Controllers\UserController@changePassword'
+    ]);
 });
-
+/**
+ * channel's Route
+ * */
 Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router){
     $router->put('/{id?}',[
         'as'=>'channel.update',
@@ -53,5 +59,18 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
     $router->match(['post','put'],'/socials',[
         'as'=>'channel.update.socials',
         'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
+    ]);
+});
+/**
+ * video's Route
+ * */
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/video'],function ($router){
+    $router->post('/upload',[
+        'as'=>'video.upload',
+        'uses'=>'App\Http\Controllers\VideoController@upload'
+    ]);
+    $router->post('/',[
+        'as'=>'video.create',
+        'uses'=>'App\Http\Controllers\VideoController@create'
     ]);
 });

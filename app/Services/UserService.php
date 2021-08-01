@@ -9,10 +9,13 @@ use App\Http\Requests\Auth\RegisterNewUserRequest;
 use App\Http\Requests\Auth\RegisterVerifyUserRequest;
 use App\Http\Requests\Auth\ResendVerificationCodeRequest;
 use App\Http\Requests\user\ChangeEmailRequest;
+use App\Http\Requests\user\ChangeEmailSubmitRequest;
+use App\Http\Requests\user\ChangePasswordRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseService
@@ -114,7 +117,7 @@ class UserService extends BaseService
         }
     }
 
-    public static function changeEmailSubmit(\App\Http\Requests\user\ChangeEmailSubmitRequest $request)
+    public static function changeEmailSubmit(ChangeEmailSubmitRequest $request)
     {
         $userId = auth()->id();
         $cashKey = self::CACHE_EMAIL_KEY.$userId;
@@ -128,5 +131,20 @@ class UserService extends BaseService
         $user->save();
         Cache::forget($cashKey);
         return response(['message'=>'ایمیل با موفقعیت تغییر یافت'],200);
+    }
+
+    public static function changePassword(ChangePasswordRequest $request)
+    {
+        try {
+            $user = auth()->user();
+            if (! Hash::check($request->old_password,$user->password)){
+                return response(['message'=>'گذرواژه وارد شده اشتباه است.'],400);
+            }
+            $user->update([ 'password' => bcrypt($request->password) ]);
+            return response(['message'=>'تغییر گذرواژه با موفقعیت انجام شد.'],200);
+        }catch (\Exception $e){
+            Log::error($e);
+            return response(['message'=>'خطایی رخ داد است!'],500);
+        }
     }
 }
