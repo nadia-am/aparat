@@ -8,6 +8,7 @@ use App\Http\Requests\channel\UpdateChannelRequest;
 use App\Http\Requests\channel\UpdateSocialsRequest;
 use App\Http\Requests\channel\UploadBannerForChannelRequest;
 use App\Http\Requests\video\createVideoRequest;
+use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
 use App\Models\Channel;
 use App\Models\User;
@@ -35,7 +36,21 @@ class VideoService  extends BaseService
 
     public static function CreateVideoService(createVideoRequest $request)
     {
-dd($request->all());
+        dd($request->all());
+    }
+
+    public static function UploadBannerService(UploadVideoBannerRequest $request)
+    {
+        try {
+            $banner = $request->file('banner');
+            $fileName =  time() . Str::random(10) . '-banner';
+            $path = public_path('videos/tmp');
+            $banner->move( $path , $fileName);
+
+            return response([  'banner'=> $fileName ],200);
+        }catch (\Exception $e){
+            return response(['message'=>'خطایی رخ داده است!'],500);
+        }
     }
 
 }
