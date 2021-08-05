@@ -13,19 +13,19 @@ class CreatePlaylistVideosTable extends Migration
      */
     public function up()
     {
-        Schema::create('palaylist_videos', function (Blueprint $table) {
+        Schema::create('playlist_videos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('video_id')
                 ->constrained('videos')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreignId('palaylist_id')
-                ->constrained('palaylists')
+            $table->foreignId('playlist_id')
+                ->constrained('playlists')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->timestamps();
+//            $table->timestamps();
         });
     }
 
@@ -36,6 +36,6 @@ class CreatePlaylistVideosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('palaylist_videos');
+        Schema::dropIfExists('playlist_videos');
     }
 }

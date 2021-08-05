@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model
+class Playlist extends Model
 {
     use HasFactory;
-    protected $table = 'tags';
-    protected $fillable = ['title'];
+    protected $table = 'playlists';
+    protected $fillable = ['user_id','title'];
 
     public function videos()
     {
-        return  $this->belongsToMany(Video::class ,'video_tags' );
+        return $this->belongsToMany(Video::class,'playlist_videos');
     }
-
 }

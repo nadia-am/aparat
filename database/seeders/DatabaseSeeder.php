@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(CategoriesTableSeeder::class);
         $this->call(TagTableSeeder::class);
+        $this->call(PlaylistsTableSeeder::class);
 
 //        Artisan::call('passport:install');
         Schema::enableForeignKeyConstraints();

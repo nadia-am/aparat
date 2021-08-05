@@ -78,3 +78,21 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/video'],function ($router){
         'uses'=>'App\Http\Controllers\VideoController@create'
     ]);
 });
+/**
+ * category's Route
+ * */
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/category'],function ($router){
+    $router->get('/',[
+        'as'=>'category.all',
+        'uses'=>'App\Http\Controllers\CategoryController@index'
+    ]);
+    $router->get('/my',[
+        'as'=>'category.all',
+        'uses'=>'App\Http\Controllers\CategoryController@my'
+    ]);
+    $router->post('/upload-banner',[
+        'as'=>'category.upload.banner',
+        'uses'=>'App\Http\Controllers\CategoryController@uploadBanner'
+    ]);
+
+});

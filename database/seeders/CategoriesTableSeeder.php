@@ -41,7 +41,6 @@ class CategoriesTableSeeder extends Seeder
             'سلامت'=>['icon'=>null, 'banner'=>null , 'user_id'=>null],
             'کارتون'=>['icon'=>null, 'banner'=>null , 'user_id'=>null],
             'هنری'=>['icon'=>null, 'banner'=>null , 'user_id'=>null],
-
             'شخصی'=>['icon'=>null, 'banner'=>null , 'user_id'=>1],
         ];
         foreach ($categories as $category=>$options){
