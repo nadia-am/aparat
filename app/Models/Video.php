@@ -8,6 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 class Video extends Model
 {
     use HasFactory;
+
+    //region model config
+    /**
+     * In queue to proccessing
+     */
+    const STATE_PENDING = 'pending';
+    /**
+     * converted finished
+     */
+    const STATE_CONVERTED = 'converted';
+    /**
+     * video accepted add to queue
+     */
+    const STATE_ACCEPTED = 'accepted';
+    /**
+     * video not accepted
+     */
+    const STATE_BLOCKED = 'blocked';
+    const STATE = [ self::STATE_PENDING ,self::STATE_CONVERTED ,self::STATE_ACCEPTED ,self::STATE_BLOCKED];
+
     protected $table = "videos";
     protected $fillable = [
         'user_id',
@@ -18,8 +38,10 @@ class Video extends Model
         'info',
         'duration',
         'banner',
+        'enable_comments',
         'published_at'
     ];
+    //endregion
 
     //region relation
     public function playlist()

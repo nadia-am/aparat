@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\category;
+namespace App\Http\Requests\Playlist;
 
 use App\Rules\UniqueForUser;
-use App\Rules\UploadedCategoryBannerId;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateCategoryRequest extends FormRequest
+class createPlaylistrequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +25,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'title'=>['required','string','min:2','max:100', new UniqueForUser('categories')],
-            'icon'=>'nullable|string' ,//TODO determind which package to use for it
-            'banner_id'=>['nullable',new UploadedCategoryBannerId()]
+             'title'=>['required','string','min:2','max:200', new UniqueForUser('categories')]
         ];
     }
 }

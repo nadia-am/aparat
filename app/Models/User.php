@@ -13,6 +13,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable ,HasApiTokens;
 
+    //region model config
     const TYPES_ADMIN = 'admin';
     const TYPES_USER = 'user';
     const TYPES = ['admin','user'];
@@ -53,11 +54,28 @@ class User extends Authenticatable
     protected $casts = [
         'verified_at' => 'datetime',
     ];
+    //endregion
 
+    //region model channel
     public function channel()
     {
         return $this->hasOne(Channel::class);
     }
+    //endregion
+
+    //region model categories
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
+    //endregion
+
+    //region model playlists
+    public function playlists()
+    {
+        return $this->hasMany(Playlist::class);
+    }
+    //endregion
 
     public function findForPassport($username)
     {
@@ -65,11 +83,13 @@ class User extends Authenticatable
         return $user;
     }
 
+    //region getter mobile
     public function setMobileAttribute($value)
     {
         $mobile = to_valid_mobile_number($value);
         $this->attributes['mobile'] = $mobile;
     }
+    //endregion
 
 
 }

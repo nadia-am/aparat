@@ -36,6 +36,6 @@ class UploadedCategoryBannerId implements Rule
      */
     public function message()
     {
-        return 'Invalid Video Id';
+        return 'Invalid Category Banner Id';
     }
 }

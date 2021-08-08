@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\category\CreateCategoryRequest;
 use App\Http\Requests\category\ListCategoryRequest;
 use App\Http\Requests\category\UploadCategoryBannerRequest;
 use App\Services\CategoryService;
@@ -22,5 +23,10 @@ class CategoryController extends Controller
     public function uploadBanner(UploadCategoryBannerRequest $request)
     {
         return CategoryService::UploadBannerService($request);
+    }
+
+    public function create(CreateCategoryRequest $request)//
+    {
+        return CategoryService::CreateCategoryService($request);
     }
 }

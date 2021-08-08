@@ -90,9 +90,47 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/category'],function ($route
         'as'=>'category.all',
         'uses'=>'App\Http\Controllers\CategoryController@my'
     ]);
+    $router->post('/',[
+        'as'=>'category.create',
+        'uses'=>'App\Http\Controllers\CategoryController@create'
+    ]);
     $router->post('/upload-banner',[
         'as'=>'category.upload.banner',
         'uses'=>'App\Http\Controllers\CategoryController@uploadBanner'
     ]);
+
+});
+/**
+ * playlist's Route
+ * */
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/playlist'],function ($router){
+    $router->get('/',[
+        'as'=>'playlist.all',
+        'uses'=>'App\Http\Controllers\PlaylistController@index'
+    ]);
+    $router->get('/my',[
+        'as'=>'playlist.all',
+        'uses'=>'App\Http\Controllers\PlaylistController@my'
+    ]);
+    $router->post('/',[
+        'as'=>'playlist.create',
+        'uses'=>'App\Http\Controllers\PlaylistController@create'
+    ]);
+
+
+});
+/**
+ * tag's Route
+ * */
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/tag'],function ($router){
+    $router->get('/',[
+        'as'=>'tag.all',
+        'uses'=>'App\Http\Controllers\TagController@index'
+    ]);
+    $router->post('/',[
+        'as'=>'tag.create',
+        'uses'=>'App\Http\Controllers\TagController@create'
+    ]);
+
 
 });
