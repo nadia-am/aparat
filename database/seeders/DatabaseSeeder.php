@@ -21,7 +21,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TagTableSeeder::class);
         $this->call(PlaylistsTableSeeder::class);
 
-//        Artisan::call('passport:install');
         Schema::enableForeignKeyConstraints();
+
+        Artisan::call('aparat:clear');
+        $this->command->info('clear all aparat temporary folder.');
     }
 }

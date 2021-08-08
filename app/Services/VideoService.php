@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Events\UploadNewVideo;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
@@ -51,17 +52,12 @@ class VideoService  extends BaseService
     public static function CreateVideoService(createVideoRequest $request)
     {
         try {
-//            $filter = new CustomFilter("drawtext=text='x y z'");
-            $videoFile = FFMpeg::fromDisk('videos')
-                ->open('/tmp/'.$request->video_id)
-//                ->addFilter($filter)//TODO add filter
-                ->export()
-                ->toDisk('videos')
-                ->inFormat(new \FFMpeg\Format\Video\X264());
 
-            $duration = $videoFile->getDurationInSeconds();
+
+
             DB::beginTransaction();
 
+            //save video in db
             $video = Video::create([
                 'user_id'=>auth()->id() ,
                 'category_id'=>$request->category ,
@@ -69,33 +65,33 @@ class VideoService  extends BaseService
                 'slug'=> ''  ,//create slug in update
                 'title'=> $request->title ,
                 'info'=> $request->info ,
-                'duration'=>  $duration ,
+                'duration'=>  0 ,
                 'banner'=> null,
                 'enable_comments'=> $request->enable_comments,
                 'published_at'=> $request->published_at ,
+                'state'=> Video::STATE_PENDING
             ]);
+            //add slug and banner to created video
             $video->slug = uniq_id( auth()->id());
             $video->banner =  $video->slug . '-banner';
             $video->save();
 
-            $videoFile->save(auth()->id() . '/' .$video->slug . '.mp4');
-            Storage::delete( public_path('videos/tmp/' . $request->video_id) );
+            //save video & banner in public folder
+            event(new UploadNewVideo($video , $request));
 
-//            $oldPath = public_path('videos/tmp/'.$request->video_id);
-//            $newPath = public_path('videos/'.  auth()->id() . '/' .$video->slug);
-//            File::move($oldPath, $newPath);
+            Storage::delete( public_path('videos/tmp/' . $request->video_id) );
             if (!empty($request->banner )){
                 $banner_name = $video->slug . '-banner';
-
                 $oldBannerPath = public_path('videos/tmp/'.$request->banner);
                 $newBannerPath = public_path('videos/'.  auth()->id() . '/' . $banner_name);
                 File::move($oldBannerPath, $newBannerPath);
             }
-
+            //add playlist to video
             if (!empty($request->playList)){
                 $playlist = Playlist::find($request->playList);
                 $playlist->videos()->attach($video->id);
             }
+            //add tags to video
             if (!empty($request->tags)){
                 $video->tags()->attach($request->tags);
             }
@@ -103,7 +99,6 @@ class VideoService  extends BaseService
             DB::commit();
             return response($video,200);
         }catch (\Exception $e){
-            dd($e);
             Log::error($e);
             DB::rollBack();
             return response(['message'=>'خطایی رخ داده است!'],500);

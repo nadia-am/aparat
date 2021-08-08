@@ -25,7 +25,7 @@ class PlaylistsTableSeeder extends Seeder
         foreach ($list as $each){
             Playlist::create([
                 'title'=> $each,
-                'user_id'=> 2,
+                'user_id'=> 1,
             ]);
         }
     }

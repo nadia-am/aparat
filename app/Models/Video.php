@@ -39,7 +39,8 @@ class Video extends Model
         'duration',
         'banner',
         'enable_comments',
-        'published_at'
+        'published_at',
+        'state'
     ];
     //endregion
 
