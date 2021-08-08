@@ -7,6 +7,7 @@ use App\Events\UploadNewVideo;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
+use App\Jobs\ConvertAndAddWaterMarkToUploadedVideoJob;
 use App\Models\Playlist;
 use App\Models\Video;
 use FFMpeg\Filters\Audio\CustomFilter;
@@ -78,8 +79,6 @@ class VideoService  extends BaseService
 
             //save video & banner in public folder
             event(new UploadNewVideo($video , $request));
-
-            Storage::delete( public_path('videos/tmp/' . $request->video_id) );
             if (!empty($request->banner )){
                 $banner_name = $video->slug . '-banner';
                 $oldBannerPath = public_path('videos/tmp/'.$request->banner);
