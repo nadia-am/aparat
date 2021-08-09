@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\video;
 
+use App\Models\Video;
+use App\Rules\CanChangeVideoState;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class ChangeStateVideoRequest extends FormRequest
 {
@@ -13,7 +16,7 @@ class ChangeStateVideoRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Gate::allows('change-state', $this->video);
     }
 
     /**
@@ -24,7 +27,7 @@ class ChangeStateVideoRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'state'=> [ 'required' , new CanChangeVideoState($this->video) ]
         ];
     }
 }

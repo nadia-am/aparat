@@ -38,6 +38,7 @@ class createVideoRequest extends FormRequest
             'channel_category' => ['nullable', new CategoryIdRequest(CategoryIdRequest::PRIVATE_CATEGORY)],
             'banner'  =>  ['nullable', new UploadedBannerId()],
             'enable_comments'=>'boolean',
+            'enable_watermark'=>'boolean',
             'published_at' => 'nullable|date_format:Y-m-d H:i:s|after:now'
         ];
     }

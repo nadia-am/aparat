@@ -77,6 +77,10 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/video'],function ($router){
         'as'=>'video.create',
         'uses'=>'App\Http\Controllers\VideoController@create'
     ]);
+    $router->put('/{video:slug}/state',[
+        'as'=>'change.state',
+        'uses'=>'App\Http\Controllers\VideoController@changeState'
+    ]);
 });
 /**
  * category's Route

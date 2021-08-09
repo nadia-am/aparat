@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Boolean;
 use phpseclib3\Math\PrimeField\Integer;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
@@ -30,6 +31,10 @@ class ConvertAndAddWaterMarkToUploadedVideoJob implements ShouldQueue
      * @var int|string|null
      */
     private $user_id;
+    /**
+     * @var Boolean
+     */
+    private $addWatermark;
 
 
     /**
@@ -37,12 +42,14 @@ class ConvertAndAddWaterMarkToUploadedVideoJob implements ShouldQueue
      *
      * @param Video $video
      * @param string $video_id
+     * @param Boolean $addWatermark
      */
-    public function __construct(Video $video , string $video_id)
+    public function __construct(Video $video , string $video_id , Boolean $addWatermark)
     {
         $this->video = $video;
         $this->video_id = $video_id;
         $this->user_id = auth()->id();
+        $this->addWatermark = $addWatermark;
     }
 
     /**
@@ -52,19 +59,21 @@ class ConvertAndAddWaterMarkToUploadedVideoJob implements ShouldQueue
      */
     public function handle()
     {
-//            $filter = new CustomFilter("drawtext=text='x y z'");
         $videoFile = FFMpeg::fromDisk('videos')
-            ->open('/tmp/'.$this->video_id)
-//                ->addFilter($filter)//TODO add filter
-            ->export()
-            ->toDisk('videos')
-            ->inFormat(new \FFMpeg\Format\Video\X264());
+            ->open('/tmp/'.$this->video_id);
+        if ($this->addWatermark){
+//            $filter = new CustomFilter("drawtext=text='x y z'");
+//            $videoFile->addFilter($filter);//TODO add filter
+        }
+        $videoFile->export()
+                    ->toDisk('videos')
+                    ->inFormat(new \FFMpeg\Format\Video\X264());
         $videoFile->save($this->user_id . '/' .$this->video->slug . '.mp4');
 
-//        Storage::delete( public_path('videos/tmp/' . $this->video_id) );
-        Storage::disk('videos')->delete('/tmp/'.$this->video_id);
-
         $this->video->duration = $videoFile->getDurationInSeconds();
+        $this->video->state = Video::STATE_CONVERTED;
         $this->video->save();
+
+        Storage::disk('videos')->delete('/tmp/'.$this->video_id);
     }
 }

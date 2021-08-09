@@ -54,6 +54,15 @@ class User extends Authenticatable
     protected $casts = [
         'verified_at' => 'datetime',
     ];
+
+    public function isAdmin()
+    {
+        return $this->type == self::TYPES_ADMIN ;
+    }
+    public function isNormalUser()
+    {
+        return $this->type == self::TYPES_USER ;
+    }
     //endregion
 
     //region model channel

@@ -8,6 +8,7 @@
 use Hashids\Hashids;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 if (!function_exists('to_valid_mobile_number')){
     function to_valid_mobile_number($mobile){
@@ -21,10 +22,10 @@ if (!function_exists('random_verification_code')){
     }
 }
 
-if (!function_exists('uniq_id')){
-    function uniq_id($value){
+if (!function_exists('uniqe_id')){
+    function uniqe_id($value){
         $hashids = new Hashids(env('APP_KEY'), 10); // pad to length 10
-        return $hashids->encode($value);
+        return $hashids->encode($value) . Str::random(5);
     }
 }
 

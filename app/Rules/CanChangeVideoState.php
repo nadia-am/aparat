@@ -2,18 +2,25 @@
 
 namespace App\Rules;
 
+use App\Models\Video;
 use Illuminate\Contracts\Validation\Rule;
 
 class CanChangeVideoState implements Rule
 {
     /**
+     * @var Video
+     */
+    private $video;
+
+    /**
      * Create a new rule instance.
      *
-     * @return void
+     * @param Video $video
      */
-    public function __construct()
+    public function __construct(Video $video)
     {
         //
+        $this->video = $video;
     }
 
     /**
@@ -23,9 +30,14 @@ class CanChangeVideoState implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value = null)
     {
-        //
+        return !empty($this->video) &&
+            (
+                ( $this->video->state == Video::STATE_CONVERTED && in_array($value , [ Video::STATE_ACCEPTED , Video::STATE_BLOCKED ]) ) ||
+                ( $this->video->state == Video::STATE_ACCEPTED && $value == Video::STATE_BLOCKED ) ||
+                ( $this->video->state == Video::STATE_BLOCKED && $value == Video::STATE_ACCEPTED )
+            );
     }
 
     /**

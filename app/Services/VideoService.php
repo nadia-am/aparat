@@ -4,6 +4,7 @@
 namespace App\Services;
 
 use App\Events\UploadNewVideo;
+use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
@@ -12,6 +13,7 @@ use App\Models\Playlist;
 use App\Models\Video;
 use FFMpeg\Filters\Audio\CustomFilter;
 use FFMpeg\Format\Video\X264;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -53,27 +55,25 @@ class VideoService  extends BaseService
     public static function CreateVideoService(createVideoRequest $request)
     {
         try {
-
-
-
             DB::beginTransaction();
 
             //save video in db
             $video = Video::create([
-                'user_id'=>auth()->id() ,
-                'category_id'=>$request->category ,
-                'channel_category_id'=>$request-> channel_category,
-                'slug'=> ''  ,//create slug in update
-                'title'=> $request->title ,
-                'info'=> $request->info ,
-                'duration'=>  0 ,
-                'banner'=> null,
-                'enable_comments'=> $request->enable_comments,
-                'published_at'=> $request->published_at ,
-                'state'=> Video::STATE_PENDING
+                'user_id'               =>auth()->id() ,
+                'category_id'           =>$request->category ,
+                'channel_category_id'   =>$request-> channel_category,
+                'slug'                  => ''  ,//create slug in update
+                'title'                 => $request->title ,
+                'info'                  => $request->info ,
+                'duration'              =>  0 ,
+                'banner'                => null,
+                'enable_comments'       => $request->enable_comments,
+                'enable_watermark'      => $request->enable_watermark,
+                'published_at'          => $request->published_at ,
+                'state'                 => Video::STATE_PENDING
             ]);
             //add slug and banner to created video
-            $video->slug = uniq_id( auth()->id());
+            $video->slug = uniqe_id( auth()->id());
             $video->banner =  $video->slug . '-banner';
             $video->save();
 
@@ -103,6 +103,16 @@ class VideoService  extends BaseService
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
 
+
+    }
+
+    public static function ChangeStateVideoService(ChangeStateVideoRequest $request)
+    {
+
+        $video = $request->video;
+        $video->state = $request->state;
+        $video->save();
+        return response($video);
 
     }
 

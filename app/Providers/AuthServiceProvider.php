@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Video;
+use App\Policies\VideoPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -15,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Video::class => VideoPolicy::class
     ];
 
     /**
@@ -31,6 +34,6 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addMinute(config('auth.token_expiration.token')));
         Passport::refreshToken(now()->addMinute(config('auth.token_expiration.refresh_token')));
 
-        //
     }
+
 }
