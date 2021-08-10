@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Requests\user\ChangeEmailRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -83,6 +81,37 @@ class User extends Authenticatable
     public function playlists()
     {
         return $this->hasMany(Playlist::class);
+    }
+    //endregion
+
+    //region model videos
+    public function videos()
+    {
+        return $this->channelVideos()
+            ->union(
+                $this->republishVideos()
+            );
+
+    }
+    //endregion
+
+    //region model channel videos
+    public function channelVideos()
+    {
+        return $this->hasMany(Video::class)->selectRaw('* , false as republish');
+    }
+    //endregion
+
+    //region model republishVideos
+    public function republishVideos()
+    {
+        return $this->hasManyThrough(
+            Video::class,
+            VideoRepublish::class,
+        'user_id', //repblish.user_id
+            'id', //video.id
+            'id' ,//user.id
+            'video_id')->selectRaw('videos.* , true as republish');//repblish.video_id
     }
     //endregion
 

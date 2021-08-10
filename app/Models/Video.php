@@ -49,15 +49,24 @@ class Video extends Model
     }
     //endregion
 
-    //region relation
+    //region relation playlist
     public function playlist()
     {
         return $this->belongsToMany(Playlist::class,'playlist_videos')->first();
     }
+    //endregion relation playlist
 
+    //region relation tags
     public function tags()
     {
         return  $this->belongsToMany(Tag::class ,'video_tags' );
     }
-    //endregion relation
+    //endregion relation tags
+
+    //region relation user
+    public function user()
+    {
+        return  $this->belongsTo(User::class);
+    }
+    //endregion relation user
 }

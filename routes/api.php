@@ -27,6 +27,7 @@ Route::group([],function ($router){
         'uses'=>'App\Http\Controllers\Authcontroller@resendVerificationCode',
     ]);
 });
+
 /**
  * User's Route
  * */
@@ -44,6 +45,7 @@ Route::group(['middleware'=>['auth:api']],function ($router){
         'uses'=>'App\Http\Controllers\UserController@changePassword'
     ]);
 });
+
 /**
  * channel's Route
  * */
@@ -61,6 +63,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
         'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
     ]);
 });
+
 /**
  * video's Route
  * */
@@ -81,7 +84,16 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/video'],function ($router){
         'as'=>'change.state',
         'uses'=>'App\Http\Controllers\VideoController@changeState'
     ]);
+    $router->post('/{video:slug}/republish',[
+        'as'=>'change.republish',
+        'uses'=>'App\Http\Controllers\VideoController@republish'
+    ]);
+    $router->get('/',[
+        'as'=>'video.list',
+        'uses'=>'App\Http\Controllers\VideoController@getList'
+    ]);
 });
+
 /**
  * category's Route
  * */
@@ -104,6 +116,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/category'],function ($route
     ]);
 
 });
+
 /**
  * playlist's Route
  * */
@@ -123,6 +136,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/playlist'],function ($route
 
 
 });
+
 /**
  * tag's Route
  * */

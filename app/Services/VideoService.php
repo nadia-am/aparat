@@ -6,25 +6,32 @@ namespace App\Services;
 use App\Events\UploadNewVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
+use App\Http\Requests\video\GetvideoListRequest;
+use App\Http\Requests\video\RepublishVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
-use App\Jobs\ConvertAndAddWaterMarkToUploadedVideoJob;
 use App\Models\Playlist;
 use App\Models\Video;
-use FFMpeg\Filters\Audio\CustomFilter;
-use FFMpeg\Format\Video\X264;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\VideoRepublish;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use ProtoneMedia\LaravelFFMpeg\Filesystem\Media;
-use ProtoneMedia\LaravelFFMpeg\MediaOpener;
-use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
 class VideoService  extends BaseService
 {
+    public static function GetVideoListService(GetvideoListRequest $request)
+    {
+        $user = auth()->user();
+        if ($request->has('republished')){
+            $videos = $request->republished ? $user->republishVideos() : $user->channelVideos();
+        }else{
+            $videos = $user->videos();
+        }
+        return $videos->paginate(10);
+    }
+
     public static function UploadVideoService(UploadVideoRequest $request)
     {
         try {
@@ -115,5 +122,21 @@ class VideoService  extends BaseService
         return response($video);
 
     }
+
+    public static function RepublishVideoService(RepublishVideoRequest $request)
+    {
+        try {
+            $user = auth()->user();
+            VideoRepublish::create([
+                'user_id' => auth()->id(),
+                'video_id' => $request->video->id,
+            ]);
+            return response(['message'=>'باز نشر با موفقعیت انجام شد' ],200);
+        }catch (\Exception $e){
+           Log::error($e);
+            return response(['message'=>'بازنشر انجام نشد! لطفا مجددا تلاش کنید!'],500);
+        }
+    }
+
 
 }
