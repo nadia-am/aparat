@@ -42,9 +42,9 @@ class ConvertAndAddWaterMarkToUploadedVideoJob implements ShouldQueue
      *
      * @param Video $video
      * @param string $video_id
-     * @param Boolean $addWatermark
+     * @param bool $addWatermark
      */
-    public function __construct(Video $video , string $video_id , Boolean $addWatermark)
+    public function __construct(Video $video , string $video_id , bool $addWatermark)
     {
         $this->video = $video;
         $this->video_id = $video_id;

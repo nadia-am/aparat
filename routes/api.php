@@ -67,31 +67,39 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
 /**
  * video's Route
  * */
-Route::group(['middleware'=>['auth:api'],'prefix'=>'/video'],function ($router){
-    $router->post('/upload',[
-        'as'=>'video.upload',
-        'uses'=>'App\Http\Controllers\VideoController@upload'
+Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
+
+    $router->post('/{video:slug}/like',[
+        'as'=>'change.like',
+        'uses'=>'App\Http\Controllers\VideoController@like'
     ]);
-    $router->post('/upload-banner',[
-        'as'=>'video.upload.banner',
-        'uses'=>'App\Http\Controllers\VideoController@uploadBanner'
-    ]);
-    $router->post('/',[
-        'as'=>'video.create',
-        'uses'=>'App\Http\Controllers\VideoController@create'
-    ]);
-    $router->put('/{video:slug}/state',[
-        'as'=>'change.state',
-        'uses'=>'App\Http\Controllers\VideoController@changeState'
-    ]);
-    $router->post('/{video:slug}/republish',[
+
+    Route::group(['middleware'=>['auth:api']],function ($router){
+        $router->get('/',[
+            'as'=>'video.list',
+            'uses'=>'App\Http\Controllers\VideoController@getList'
+        ]);
+        $router->post('/upload',[
+            'as'=>'video.upload',
+            'uses'=>'App\Http\Controllers\VideoController@upload'
+        ]);
+        $router->post('/upload-banner',[
+            'as'=>'video.upload.banner',
+            'uses'=>'App\Http\Controllers\VideoController@uploadBanner'
+        ]);
+        $router->post('/',[
+            'as'=>'video.create',
+            'uses'=>'App\Http\Controllers\VideoController@create'
+        ]);
+        $router->put('/{video:slug}/state',[
+            'as'=>'change.state',
+            'uses'=>'App\Http\Controllers\VideoController@changeState'
+        ]);
+        $router->post('/{video:slug}/republish',[
         'as'=>'change.republish',
         'uses'=>'App\Http\Controllers\VideoController@republish'
     ]);
-    $router->get('/',[
-        'as'=>'video.list',
-        'uses'=>'App\Http\Controllers\VideoController@getList'
-    ]);
+    });
 });
 
 /**

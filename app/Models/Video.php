@@ -69,4 +69,39 @@ class Video extends Model
         return  $this->belongsTo(User::class);
     }
     //endregion relation user
+
+    //region check state
+    public function isInState($state)
+    {
+        return $this->state == $state;
+    }
+    //endregion
+
+    //region pendding
+    public function isPendding()
+    {
+        return $this->isInState(self::STATE_PENDING);
+    }
+    //endregion
+
+    //region accepted
+    public function isAccepted()
+    {
+        return $this->isInState(self::STATE_ACCEPTED);
+    }
+    //endregion
+
+    //region blocked
+    public function isBlocked()
+    {
+        return $this->isInState(self::STATE_BLOCKED);
+    }
+    //endregion relation user
+
+    //region converted
+    public function isConverted()
+    {
+        return $this->isInState(self::STATE_CONVERTED);
+    }
+    //endregion relation user
 }

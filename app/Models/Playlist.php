@@ -27,4 +27,11 @@ class Playlist extends Model
         return $this->belongsTo(User::class);
     }
     //endregion
+
+    public function toArray()
+    {
+        $data = parent::toArray();
+        $data['size'] = $this->videos()->count();
+        return $data;
+    }
 }

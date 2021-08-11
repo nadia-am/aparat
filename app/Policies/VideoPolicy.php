@@ -18,15 +18,22 @@ class VideoPolicy
 
     public function republish(User $user , Video $video=null)
     {
-        return $video &&
+        return $video &&  $video->isAccepted() &&
             (
                 //this video is'nt mine
                 $video->user_id != $user->id &&
-                //if this video didnt republished by me
+                //if this video didn't republished by me
                 VideoRepublish::where([
                     'user_id'=> auth()->id() ,
                     'video_id'=>$video->id
                 ])->count() < 1
             );
+    }
+
+    public function like(User $user=null , Video $video=null)
+    {
+        if ($video){
+            return $video && $video->isAccepted();
+        }
     }
 }

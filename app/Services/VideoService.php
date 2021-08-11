@@ -7,11 +7,13 @@ use App\Events\UploadNewVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\GetvideoListRequest;
+use App\Http\Requests\video\LikeVideoRequest;
 use App\Http\Requests\video\RepublishVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
 use App\Models\Playlist;
 use App\Models\Video;
+use App\Models\VideoFavourit;
 use App\Models\VideoRepublish;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -29,7 +31,9 @@ class VideoService  extends BaseService
         }else{
             $videos = $user->videos();
         }
-        return $videos->paginate(10);
+        return $videos
+                    ->orderBy('id')
+                    ->paginate(10);
     }
 
     public static function UploadVideoService(UploadVideoRequest $request)
@@ -136,6 +140,35 @@ class VideoService  extends BaseService
            Log::error($e);
             return response(['message'=>'بازنشر انجام نشد! لطفا مجددا تلاش کنید!'],500);
         }
+    }
+
+    public static function LikeVideoService(LikeVideoRequest $request)
+    {
+        $user = auth('api')->user();
+        $video = $request->video;
+        $like = $request->like;
+        $favourit = $user ? $user->favouritVideos()->where(['video_id'=> $video->id])->first() : null;
+        //if doesn't exist in like list
+        if (empty($favourit)){
+            if ($like){//if like request send
+                VideoFavourit::create([
+                    'user_id'=> $user ? $user->id : null,
+                    'video_id'=> $video->id,
+                ]);
+            }else{//if dislike request sent
+                return response(['message'=>'شما قادر به این کار نیستید.'],400);
+            }
+        }else{//if video already exist means user liked it befor
+            if ($like){//if like request send
+                return response(['message'=>'شما قبلا این ویدیو را پسندیده اید.'],400);
+            }else{//if dislike request sent
+                VideoFavourit::where([
+                    'user_id'=> $user->id,
+                    'video_id'=> $video->id,
+                ])->delete();
+            }
+        }
+        return response(['message'=>'با موفقعیت ثبت گردید.'],200);
     }
 
 

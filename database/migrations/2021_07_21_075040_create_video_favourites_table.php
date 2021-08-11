@@ -15,7 +15,7 @@ class CreateVideoFavouritesTable extends Migration
     {
         Schema::create('video_favourites', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
+            $table->foreignId('user_id')->nullable()
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

@@ -95,6 +95,19 @@ class User extends Authenticatable
     }
     //endregion
 
+    //region model favourit videos
+    public function favouritVideos()
+    {
+        return $this->hasManyThrough(
+            Video::class,
+            VideoFavourit::class,
+            'user_id', //VideoFavourit.user_id
+            'id', //video.id
+            'id' ,//user.id
+            'video_id');
+    }
+    //endregion
+
     //region model channel videos
     public function channelVideos()
     {
