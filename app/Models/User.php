@@ -142,6 +142,12 @@ class User extends Authenticatable
     }
     //endregion
 
+    public function follow(User $user)
+    {
+         
+        return $user;
+    }
+
 
 }
 

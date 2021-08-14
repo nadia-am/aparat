@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\video;
 
+use App\Models\Video;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
-class LikeVideoRequest extends FormRequest
+class LikedByCurrentUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,8 +15,7 @@ class LikeVideoRequest extends FormRequest
      */
     public function authorize()
     {
-//        dd($this->video);
-        return Gate::allows('like',$this->video);
+        return Gate::allows('getLikedList',Video::class);
     }
 
     /**
@@ -26,7 +26,7 @@ class LikeVideoRequest extends FormRequest
     public function rules()
     {
         return [
-            'like'=>'required|boolean'
+            //
         ];
     }
 }

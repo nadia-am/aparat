@@ -62,6 +62,10 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
         'as'=>'channel.update.socials',
         'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
     ]);
+    $router->match(['post','get'],'/{channel}/follow',[
+        'as'=>'channel.follow',
+        'uses'=>'App\Http\Controllers\ChannelController@follow'
+    ]);
 });
 
 /**
@@ -73,12 +77,13 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
         'as'=>'change.like',
         'uses'=>'App\Http\Controllers\VideoController@like'
     ]);
+    $router->get('/',[
+        'as'=>'video.list',
+        'uses'=>'App\Http\Controllers\VideoController@getList'
+    ]);
 
     Route::group(['middleware'=>['auth:api']],function ($router){
-        $router->get('/',[
-            'as'=>'video.list',
-            'uses'=>'App\Http\Controllers\VideoController@getList'
-        ]);
+
         $router->post('/upload',[
             'as'=>'video.upload',
             'uses'=>'App\Http\Controllers\VideoController@upload'
@@ -96,9 +101,13 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
             'uses'=>'App\Http\Controllers\VideoController@changeState'
         ]);
         $router->post('/{video:slug}/republish',[
-        'as'=>'change.republish',
-        'uses'=>'App\Http\Controllers\VideoController@republish'
-    ]);
+            'as'=>'change.republish',
+            'uses'=>'App\Http\Controllers\VideoController@republish'
+        ]);
+        $router->get('/liked',[
+            'as'=>'change.liked',
+            'uses'=>'App\Http\Controllers\VideoController@likedByCurrentUser'
+        ]);
     });
 });
 

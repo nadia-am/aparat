@@ -20,10 +20,13 @@ class CreateVideoFavouritesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
+            $table->string('user_ip',100);
+
             $table->foreignId('video_id')
                 ->constrained('videos')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+
 
             $table->timestamps();
 

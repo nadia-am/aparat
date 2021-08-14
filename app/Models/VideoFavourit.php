@@ -9,5 +9,5 @@ class VideoFavourit extends Model
 {
     use HasFactory;
     protected $table = 'video_favourites';
-    protected $fillable = [ 'user_id', 'video_id' ];
+    protected $fillable = [ 'user_id', 'video_id','user_ip' ];
 }

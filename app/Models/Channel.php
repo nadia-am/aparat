@@ -14,6 +14,8 @@ class Channel extends Model
     protected $fillable =[
         'user_id','name','info','banner','social'
     ];
+
+
     //endregion
 
     //region user
@@ -35,6 +37,13 @@ class Channel extends Model
     public function getSocialAttribute()
     {
         return json_decode($this->attributes['social'],true);
+    }
+    //endregion
+
+    //region Override method
+    public function getRouteKeyName()
+    {
+        return 'name';
     }
     //endregion
 }

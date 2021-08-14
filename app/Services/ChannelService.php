@@ -4,12 +4,11 @@
 namespace App\Services;
 
 
+use App\Http\Requests\channel\FollowUserChannelRequest;
 use App\Http\Requests\channel\UpdateChannelRequest;
 use App\Http\Requests\channel\UpdateSocialsRequest;
 use App\Http\Requests\channel\UploadBannerForChannelRequest;
 use App\Models\Channel;
-use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -43,7 +42,6 @@ class ChannelService  extends BaseService
            Log::error($e);
            return response(['message'=>'خطایی رخ داده است!'],500);
         }
-
     }
 
     public static function UploadBannerForChannelService(UploadBannerForChannelRequest $request)
@@ -66,7 +64,6 @@ class ChannelService  extends BaseService
         }catch (\Exception $e){
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
-
     }
 
     public static function UpdateSocials(UpdateSocialsRequest $request)
@@ -85,8 +82,13 @@ class ChannelService  extends BaseService
             Log::error($e);
             return response(['message'=>'خطایی رخ داد'],500);
         }
+    }
 
-
+    public static function FollowService(FollowUserChannelRequest $request)
+    {
+        $user = $request->user();
+        $user->follow($request->channel->user);
+        return response(['message'=>'کانال به لیست دنبال شوندگان شما افزوده شد.'],200);
     }
 
 

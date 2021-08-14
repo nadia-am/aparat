@@ -7,6 +7,7 @@ use App\Events\UploadNewVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\GetvideoListRequest;
+use App\Http\Requests\video\LikedByCurrentUserRequest;
 use App\Http\Requests\video\LikeVideoRequest;
 use App\Http\Requests\video\RepublishVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
@@ -25,15 +26,21 @@ class VideoService  extends BaseService
 {
     public static function GetVideoListService(GetvideoListRequest $request)
     {
-        $user = auth()->user();
+        $user = auth('api')->user();
         if ($request->has('republished')){
-            $videos = $request->republished ? $user->republishVideos() : $user->channelVideos();
+            if ($user){
+                $videos = $request->republished ? $user->republishVideos() : $user->channelVideos();
+            }else{
+                $videos = $request->republished ? Video::whereRepublished() : Video::whereNotRepublished() ;
+            }
+
         }else{
-            $videos = $user->videos();
+            $videos = $user ? $user->videos() : Video::query() ;
         }
+
         return $videos
                     ->orderBy('id')
-                    ->paginate(10);
+                    ->paginate();
     }
 
     public static function UploadVideoService(UploadVideoRequest $request)
@@ -147,28 +154,50 @@ class VideoService  extends BaseService
         $user = auth('api')->user();
         $video = $request->video;
         $like = $request->like;
-        $favourit = $user ? $user->favouritVideos()->where(['video_id'=> $video->id])->first() : null;
-        //if doesn't exist in like list
-        if (empty($favourit)){
-            if ($like){//if like request send
-                VideoFavourit::create([
-                    'user_id'=> $user ? $user->id : null,
-                    'video_id'=> $video->id,
-                ]);
-            }else{//if dislike request sent
-                return response(['message'=>'شما قادر به این کار نیستید.'],400);
-            }
-        }else{//if video already exist means user liked it befor
-            if ($like){//if like request send
-                return response(['message'=>'شما قبلا این ویدیو را پسندیده اید.'],400);
-            }else{//if dislike request sent
-                VideoFavourit::where([
-                    'user_id'=> $user->id,
-                    'video_id'=> $video->id,
-                ])->delete();
+
+        $clientIp = client_ip();
+        if ($user){
+            $favourit = $user->favouritVideos()->where(['video_id'=> $video->id])->first();
+            if ($like){
+                $result = $favourit ?
+                    false:
+                    VideoFavourit::create([
+                        'user_id'=> $user->id,
+                        'user_ip'=> $clientIp,
+                        'video_id'=> $video->id,
+                    ]);
+            }else{
+                $result = $favourit ?
+                    $user->favouritVideos()->delete():
+                    false;
             }
         }
-        return response(['message'=>'با موفقعیت ثبت گردید.'],200);
+        else{
+            $favourit = VideoFavourit::where(['video_id'=>$video->id ,'user_id'=>null , 'user_ip'=>$clientIp])->first();
+            if ($like){
+                $result = $favourit ?
+                    false :
+                    VideoFavourit::create([
+                        'user_id'=> null,
+                        'user_ip'=> $clientIp,
+                        'video_id'=> $video->id,
+                    ]);
+            }else{
+                $result = $favourit ? $favourit->delete() : false;
+            }
+        }
+
+        return $result ?
+            response(['با موفقعیت ثبت شد'],200) :
+            response(['شما قادر به انجام این کار نیستید!'],400) ;
+    }
+
+    public static function LikeedByCurrentUserService(LikedByCurrentUserRequest $request)
+    {
+        $user = auth()->user();
+        $videos = $user->favouritVideos()
+        ->paginate();
+        return $videos;
     }
 
 

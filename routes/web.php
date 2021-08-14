@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/',function (){
-    return view('welcome');
+    $UniueAddr = $_SERVER['HTTP_USER_AGENT'] . md5($_SERVER['REMOTE_ADDR']);
 });
 
 

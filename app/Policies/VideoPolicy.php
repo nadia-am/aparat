@@ -30,10 +30,15 @@ class VideoPolicy
             );
     }
 
-    public function like(User $user=null , Video $video=null)
+    public function like(User $user = null , Video $video=null)
     {
         if ($video){
             return $video && $video->isAccepted();
         }
+    }
+
+    public function getLikedList(User $user, Video $video=null)
+    {
+        return true;
     }
 }
