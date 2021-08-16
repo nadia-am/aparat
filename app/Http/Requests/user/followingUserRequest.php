@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\user;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class followingUserRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class followingUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Gate::allows('seeFollowingList' ,User::class );
     }
 
     /**

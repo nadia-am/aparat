@@ -44,6 +44,23 @@ Route::group(['middleware'=>['auth:api']],function ($router){
         'as'=>'password.change',
         'uses'=>'App\Http\Controllers\UserController@changePassword'
     ]);
+    // User's
+    $router->match(['post','get'],'/{channel}/follow',[
+        'as'=>'user.follow',
+        'uses'=>'App\Http\Controllers\UserController@follow'
+    ]);
+    $router->match(['post','get'],'/{channel}/unfollow',[
+        'as'=>'user.unfollow',
+        'uses'=>'App\Http\Controllers\UserController@unfollow'
+    ]);
+    $router->get('/followings',[
+        'as'=>'user.followings',
+        'uses'=>'App\Http\Controllers\UserController@followings',
+    ]);
+    $router->get('/followers',[
+        'as'=>'user.followers',
+        'uses'=>'App\Http\Controllers\UserController@followers',
+    ]);
 });
 
 /**
@@ -62,10 +79,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
         'as'=>'channel.update.socials',
         'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
     ]);
-    $router->match(['post','get'],'/{channel}/follow',[
-        'as'=>'channel.follow',
-        'uses'=>'App\Http\Controllers\ChannelController@follow'
-    ]);
+
 });
 
 /**
@@ -73,17 +87,23 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
  * */
 Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
 
-    $router->post('/{video:slug}/like',[
+    $router->match(['post','put'], '/{video:slug}/like',[
         'as'=>'change.like',
         'uses'=>'App\Http\Controllers\VideoController@like'
+    ]);
+    $router->match(['post','put'], '/{video:slug}/unlike',[
+        'as'=>'change.unlike',
+        'uses'=>'App\Http\Controllers\VideoController@unlike'
     ]);
     $router->get('/',[
         'as'=>'video.list',
         'uses'=>'App\Http\Controllers\VideoController@getList'
     ]);
-
+    $router->get('/{video:slug}',[
+        'as'=>'video.show',
+        'uses'=>'App\Http\Controllers\VideoController@show'
+    ]);
     Route::group(['middleware'=>['auth:api']],function ($router){
-
         $router->post('/upload',[
             'as'=>'video.upload',
             'uses'=>'App\Http\Controllers\VideoController@upload'
@@ -108,6 +128,7 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
             'as'=>'change.liked',
             'uses'=>'App\Http\Controllers\VideoController@likedByCurrentUser'
         ]);
+
     });
 });
 
@@ -131,7 +152,6 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/category'],function ($route
         'as'=>'category.upload.banner',
         'uses'=>'App\Http\Controllers\CategoryController@uploadBanner'
     ]);
-
 });
 
 /**
@@ -150,8 +170,6 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/playlist'],function ($route
         'as'=>'playlist.create',
         'uses'=>'App\Http\Controllers\PlaylistController@create'
     ]);
-
-
 });
 
 /**

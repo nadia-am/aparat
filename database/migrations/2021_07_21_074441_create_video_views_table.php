@@ -17,7 +17,7 @@ class CreateVideoViewsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')
                 ->nullable();
-
+            $table->string('user_ip',100);
             $table->foreignId('video_id')
                 ->constrained('videos')
                 ->onUpdate('cascade')

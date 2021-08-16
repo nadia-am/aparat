@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Video;
+use App\Models\VideoFavourit;
 use App\Models\VideoRepublish;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -32,10 +33,30 @@ class VideoPolicy
 
     public function like(User $user = null , Video $video=null)
     {
-        if ($video){
-            return $video && $video->isAccepted();
+        if ($video && $video->isAccepted() ){
+            $conditions = [
+                'video_id'=>$video->id ,
+                'user_id'=>$user ? $user->id : null
+            ];
+            if (empty($user)){
+                $conditions['user_ip'] = client_ip();
+            }
+            return VideoFavourit::where($conditions)->count() == 0 ;
         }
+        return false;
     }
+    public function unlike(User $user = null , Video $video=null)
+    {
+        $conditions = [
+            'video_id'=>$video->id ,
+            'user_id'=>$user ? $user->id : null
+        ];
+        if (empty($user)){
+            $conditions['user_ip'] = client_ip();
+        }
+        return VideoFavourit::where($conditions)->count() ;
+    }
+
 
     public function getLikedList(User $user, Video $video=null)
     {

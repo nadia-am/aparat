@@ -8,12 +8,23 @@ use App\Http\Requests\video\GetvideoListRequest;
 use App\Http\Requests\video\LikedByCurrentUserRequest;
 use App\Http\Requests\video\LikeVideoRequest;
 use App\Http\Requests\video\RepublishVideoRequest;
+use App\Http\Requests\video\showVideoRequest;
+use App\Http\Requests\video\unLikeVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
 use App\Services\VideoService;
 
 class VideoController extends Controller
 {
+    public function getList(GetvideoListRequest $request)
+    {
+        return VideoService::GetVideoListService($request);
+    }
+
+    public function show(showVideoRequest $request)
+    {
+        return VideoService::ShowVideoService($request);
+    }
     public function upload( UploadVideoRequest $request )
     {
         return VideoService::UploadVideoService($request);
@@ -34,10 +45,7 @@ class VideoController extends Controller
         return VideoService::ChangeStateVideoService($request);
     }
 
-    public function getList(GetvideoListRequest $request)
-    {
-        return VideoService::GetVideoListService($request);
-    }
+
 
     public function republish(RepublishVideoRequest $request)
     {
@@ -49,8 +57,15 @@ class VideoController extends Controller
         return VideoService::LikeVideoService($request);
     }
 
+    public function unlike(unLikeVideoRequest $request)
+    {
+        return VideoService::unLikeVideoService($request);
+    }
+
     public function likedByCurrentUser(LikedByCurrentUserRequest $request)
     {
         return VideoService::LikeedByCurrentUserService($request);
     }
+
+
 }

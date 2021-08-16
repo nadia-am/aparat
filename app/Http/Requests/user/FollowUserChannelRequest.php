@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Requests\channel;
+namespace App\Http\Requests\user;
 
-use App\Models\Channel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 

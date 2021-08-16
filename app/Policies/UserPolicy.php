@@ -7,12 +7,24 @@ use App\Models\Video;
 use App\Models\VideoRepublish;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ChannelPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function follow(){
-        
+    public function follow(User $user , User $otherUser){
+        return ($user->id != $otherUser->id) &&
+               (!$user->followings()->where('user_id2', $otherUser->id)->count());
+    }
+
+    public function unfollow(User $user , User $otherUser)
+    {
+        return ($user->id != $otherUser->id) &&
+            ($user->followings()->where('user_id2', $otherUser->id)->count());
+    }
+
+    public function seeFollowingList(User $user )
+    {
+        return true;
     }
 
 

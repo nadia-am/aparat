@@ -3,6 +3,7 @@
 namespace App\Http\Requests\video;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class unLikeVideoRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class unLikeVideoRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Gate::forUser(auth('api')->user())->
+        allows('unlike',$this->video);
     }
 
     /**

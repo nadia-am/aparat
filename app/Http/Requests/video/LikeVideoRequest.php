@@ -15,7 +15,8 @@ class LikeVideoRequest extends FormRequest
     public function authorize()
     {
 //        dd($this->video);
-        return Gate::allows('like',$this->video);
+        return Gate::forUser(auth('api')->user())->
+                allows('like',$this->video);
     }
 
     /**
@@ -26,7 +27,7 @@ class LikeVideoRequest extends FormRequest
     public function rules()
     {
         return [
-            'like'=>'required|boolean'
+//            'like'=>'required|boolean'
         ];
     }
 }

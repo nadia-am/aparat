@@ -8,6 +8,9 @@ use App\Exceptions\UserAlreadyRegisterException;
 use App\Http\Requests\Auth\RegisterNewUserRequest;
 use App\Http\Requests\Auth\RegisterVerifyUserRequest;
 use App\Http\Requests\Auth\ResendVerificationCodeRequest;
+use App\Http\Requests\user\followingUserRequest;
+use App\Http\Requests\user\FollowUserChannelRequest;
+use App\Http\Requests\user\unFollowUserChannelRequest;
 use App\Http\Requests\user\ChangeEmailRequest;
 use App\Http\Requests\user\ChangeEmailSubmitRequest;
 use App\Http\Requests\user\ChangePasswordRequest;
@@ -146,5 +149,29 @@ class UserService extends BaseService
             Log::error($e);
             return response(['message'=>'خطایی رخ داد است!'],500);
         }
+    }
+
+    public static function FollowService(FollowUserChannelRequest $request)
+    {
+        $user = $request->user();
+        $user->follow($request->channel->user);
+        return response(['message'=>'با موفقعیت انجام شد.'],200);
+    }
+
+    public static function unFollowService(unFollowUserChannelRequest $request)
+    {
+        $user = $request->user();
+        $user->unfollow($request->channel->user);
+        return response(['message'=>'با موفقعیت انجام شد.'],200);
+    }
+
+    public static function userFollowingService(followingUserRequest $request)
+    {
+        return $request->user()->followings()->paginate();
+    }
+
+    public static function userFollowersService(followingUserRequest $request)
+    {
+        return $request->user()->followers()->paginate();
     }
 }

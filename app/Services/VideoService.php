@@ -4,12 +4,15 @@
 namespace App\Services;
 
 use App\Events\UploadNewVideo;
+use App\Events\VisitVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
 use App\Http\Requests\video\GetvideoListRequest;
 use App\Http\Requests\video\LikedByCurrentUserRequest;
 use App\Http\Requests\video\LikeVideoRequest;
 use App\Http\Requests\video\RepublishVideoRequest;
+use App\Http\Requests\video\showVideoRequest;
+use App\Http\Requests\video\unLikeVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
 use App\Models\Playlist;
@@ -151,45 +154,26 @@ class VideoService  extends BaseService
 
     public static function LikeVideoService(LikeVideoRequest $request)
     {
+        VideoFavourit::create([
+            'user_id'=> auth('api')->id(),
+            'user_ip'=> client_ip(),
+            'video_id'=> $request->video
+        ]);
+        return response(['با موفقعیت ثبت شد'],200);
+    }
+
+    public static function unLikeVideoService(unLikeVideoRequest $request)
+    {
         $user = auth('api')->user();
-        $video = $request->video;
-        $like = $request->like;
-
-        $clientIp = client_ip();
-        if ($user){
-            $favourit = $user->favouritVideos()->where(['video_id'=> $video->id])->first();
-            if ($like){
-                $result = $favourit ?
-                    false:
-                    VideoFavourit::create([
-                        'user_id'=> $user->id,
-                        'user_ip'=> $clientIp,
-                        'video_id'=> $video->id,
-                    ]);
-            }else{
-                $result = $favourit ?
-                    $user->favouritVideos()->delete():
-                    false;
-            }
+        $conditions = [
+            'video_id'=>$request->video->id ,
+            'user_id'=>$user ? $user->id : null
+        ];
+        if (empty($user)){
+            $conditions['user_ip'] = client_ip();
         }
-        else{
-            $favourit = VideoFavourit::where(['video_id'=>$video->id ,'user_id'=>null , 'user_ip'=>$clientIp])->first();
-            if ($like){
-                $result = $favourit ?
-                    false :
-                    VideoFavourit::create([
-                        'user_id'=> null,
-                        'user_ip'=> $clientIp,
-                        'video_id'=> $video->id,
-                    ]);
-            }else{
-                $result = $favourit ? $favourit->delete() : false;
-            }
-        }
-
-        return $result ?
-            response(['با موفقعیت ثبت شد'],200) :
-            response(['شما قادر به انجام این کار نیستید!'],400) ;
+        VideoFavourit::where($conditions)->delete() ;
+        return response(['با موفقعیت ثبت شد'],200);
     }
 
     public static function LikeedByCurrentUserService(LikedByCurrentUserRequest $request)
@@ -198,6 +182,12 @@ class VideoService  extends BaseService
         $videos = $user->favouritVideos()
         ->paginate();
         return $videos;
+    }
+
+    public static function ShowVideoService(showVideoRequest $request)
+    {
+        event(new VisitVideo($request->video));
+        return $request->video;
     }
 
 

@@ -132,4 +132,9 @@ class Video extends Model
         return static::whereRaw('id not in (select video_id from video_republishes)');
     }
     //endregion relation user
+
+    public function viewers()
+    {
+        return $this->belongsToMany(User::class,'video_views')->withTimestamps();
+    }
 }

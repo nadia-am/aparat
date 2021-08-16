@@ -142,13 +142,51 @@ class User extends Authenticatable
     }
     //endregion
 
-    public function follow(User $user)
+
+    public function followings( )
     {
-         
-        return $user;
+        return $this->hasManyThrough(
+            User::class,
+            UserFollowing::class,
+            'user_id1',
+            'id',
+            'id',
+        'user_id2');
     }
 
+    public function followers( )
+    {
+        return $this->hasManyThrough(
+            User::class,
+            UserFollowing::class,
+            'user_id2',
+            'id',
+            'id',
+            'user_id1');
+    }
 
+    public function follow(User $user)
+    {
+        return UserFollowing::create([
+            'user_id1' => $this->id,
+            'user_id2' => $user->id
+        ]);
+
+    }
+
+    public function unfollow(User $user)
+    {
+        return UserFollowing::where([
+            'user_id1' => $this->id,
+            'user_id2' => $user->id
+        ])->delete();
+
+    }
+
+    public function views()
+    {
+        return $this->belongsToMany(Video::class,'video_views')->withTimestamps();
+    }
 }
 
 

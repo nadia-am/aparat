@@ -4,7 +4,6 @@
 namespace App\Services;
 
 
-use App\Http\Requests\channel\FollowUserChannelRequest;
 use App\Http\Requests\channel\UpdateChannelRequest;
 use App\Http\Requests\channel\UpdateSocialsRequest;
 use App\Http\Requests\channel\UploadBannerForChannelRequest;
@@ -84,12 +83,7 @@ class ChannelService  extends BaseService
         }
     }
 
-    public static function FollowService(FollowUserChannelRequest $request)
-    {
-        $user = $request->user();
-        $user->follow($request->channel->user);
-        return response(['message'=>'کانال به لیست دنبال شوندگان شما افزوده شد.'],200);
-    }
+
 
 
 }

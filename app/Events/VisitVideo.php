@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Video;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -15,13 +16,19 @@ class VisitVideo
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
+     * @var Video
+     */
+    private $video;
+
+    /**
      * Create a new event instance.
      *
-     * @return void
+     * @param Video $video
      */
-    public function __construct()
+    public function __construct(Video $video)
     {
         //
+        $this->video = $video;
     }
 
     /**
@@ -32,5 +39,13 @@ class VisitVideo
     public function broadcastOn()
     {
         return new PrivateChannel('channel-name');
+    }
+
+    /**
+     * @return Video
+     */
+    public function getVideo()
+    {
+        return $this->video;
     }
 }
