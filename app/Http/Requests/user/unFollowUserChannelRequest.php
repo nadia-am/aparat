@@ -3,8 +3,9 @@
 namespace App\Http\Requests\channel;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
-class FollowUserChannelRequest extends FormRequest
+class unFollowUserChannelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,7 @@ class FollowUserChannelRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Gate::allows('unfollow',$this->channel->user );
     }
 
     /**
