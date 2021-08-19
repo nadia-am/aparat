@@ -13,11 +13,11 @@ class Comment extends Model
     protected $fillable = [	'user_id' ,	'video_id',	'parent_id' , 'body' , 'state'];
 
     const STATE_PENDING = 'pending';
-    const STATE_accepted = 'accepted';
+    const STATE_ACCEPTED = 'accepted';
     const STATE_READ = 'read';
     const STATES = [
         self::STATE_PENDING,
-        self::STATE_accepted,
+        self::STATE_ACCEPTED,
         self::STATE_READ
     ];
 

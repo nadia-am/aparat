@@ -204,6 +204,9 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/comment'],function ($router
         'as'=>'comment.create',
         'uses'=>'App\Http\Controllers\CommentController@create'
     ]);
-
+    $router->match(['post','put'],'/{comment}/state',[
+        'as'=>'comment.change.state',
+        'uses'=>'App\Http\Controllers\CommentController@changeState'
+    ]);
 
 });

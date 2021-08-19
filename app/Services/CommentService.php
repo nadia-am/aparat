@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Http\Requests\comment\changeCommentStateRequest;
 use App\Http\Requests\comment\createCommentsRequest;
 use App\Http\Requests\comment\ListCommentsRequest;
 use App\Models\Comment;
@@ -29,10 +30,18 @@ class CommentService  extends BaseService
             'parent_id'=>$request->parent_id,
             'body'=>$request->body,
             'state'=> $video->user_id == $user_id ?
-                Comment::STATE_accepted :
+                Comment::STATE_ACCEPTED :
                 Comment::STATE_PENDING
         ]);
         return $comment;
+    }
+
+    public static function changeState(changeCommentStateRequest $request)
+    {
+        $comment = $request->comment;
+        $comment->state = $request->state;
+        $comment->save();
+        return response(['message'=>'وضعیت با موفقیت صورت گرفت'],200);
     }
 
 }
