@@ -37,4 +37,13 @@ class Comment extends Model
         return $this->belongsTo(Comment::class , 'parent_id');
     }
     //endregion relation
+
+    //region static method
+    protected static function channelComments($userId)
+    {
+        return Comment::join('videos','comments.video_id','=' , 'videos.id')
+            ->selectRaw('comments.*')
+            ->where('videos.user_id', '=' , $userId );
+    }
+    //endregion static method
 }
