@@ -4,10 +4,12 @@
 namespace App\Services;
 
 
+use App\Http\Requests\channel\ChannelStatisticRequest;
 use App\Http\Requests\channel\UpdateChannelRequest;
 use App\Http\Requests\channel\UpdateSocialsRequest;
 use App\Http\Requests\channel\UploadBannerForChannelRequest;
 use App\Models\Channel;
+use App\Models\Video;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -83,7 +85,27 @@ class ChannelService  extends BaseService
         }
     }
 
+    public static function ShowStatistic(ChannelStatisticRequest $request)
+    {
 
+        $data = [
+            'views'=>[],
+            'total_views'=>0,
+            'total_followers'=> $request->user()->followers()->count(),
+            'total_videos'=> $request->user()->channelVideos()->count(),
+            'total_comments'=> Video::channelComments($request->user()->id)
+                ->selectRaw('comments.*')
+                ->count(),//TODO get unaccepted comment
+        ];
+        $videos = Video::views($request->user()->id)
+        ->selectRaw('date(video_views.created_at) as date , count(*) as views')
+        ->groupBy(DB::raw('date(video_views.created_at)'));
+        $videos->each(function ($item) use (&$data){
+            $data['total_views'] += $item->views;
+            $data['views'][$item->date] = $item->views;
+        });
+        return $data;
+    }
 
 
 }

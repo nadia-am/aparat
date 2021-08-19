@@ -79,6 +79,10 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
         'as'=>'channel.update.socials',
         'uses'=>'App\Http\Controllers\ChannelController@updatesocials'
     ]);
+    $router->get('/statistics',[
+        'as'=>'channel.statistics',
+        'uses'=>'App\Http\Controllers\ChannelController@statistics'
+    ]);
 
 });
 
@@ -179,6 +183,22 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/tag'],function ($router){
     $router->get('/',[
         'as'=>'tag.all',
         'uses'=>'App\Http\Controllers\TagController@index'
+    ]);
+    $router->post('/',[
+        'as'=>'tag.create',
+        'uses'=>'App\Http\Controllers\TagController@create'
+    ]);
+
+
+});
+
+/**
+ * comment's Route
+ * */
+Route::group(['middleware'=>['auth:api'],'prefix'=>'/comment'],function ($router){
+    $router->get('/',[
+        'as'=>'comment.all',
+        'uses'=>'App\Http\Controllers\CommentController@index'
     ]);
     $router->post('/',[
         'as'=>'tag.create',

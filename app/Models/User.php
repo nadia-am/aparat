@@ -62,29 +62,19 @@ class User extends Authenticatable
         return $this->type == self::TYPES_USER ;
     }
     //endregion
-
-    //region model channel
+    //region relations
     public function channel()
     {
         return $this->hasOne(Channel::class);
     }
-    //endregion
-
-    //region model categories
     public function categories()
     {
         return $this->hasMany(Category::class);
     }
-    //endregion
-
-    //region model playlists
     public function playlists()
     {
         return $this->hasMany(Playlist::class);
     }
-    //endregion
-
-    //region model videos
     public function videos()
     {
         return $this->channelVideos()
@@ -93,9 +83,10 @@ class User extends Authenticatable
             );
 
     }
-    //endregion
-
-    //region model favourit videos
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
     public function favouritVideos()
     {
         return $this->hasManyThrough(
@@ -106,16 +97,10 @@ class User extends Authenticatable
             'id' ,//user.id
             'video_id');
     }
-    //endregion
-
-    //region model channel videos
     public function channelVideos()
     {
         return $this->hasMany(Video::class)->selectRaw('* , false as republish');
     }
-    //endregion
-
-    //region model republishVideos
     public function republishVideos()
     {
         return $this->hasManyThrough(
@@ -125,6 +110,30 @@ class User extends Authenticatable
             'id', //video.id
             'id' ,//user.id
             'video_id')->selectRaw('videos.* , true as republish');//repblish.video_id
+    }
+    public function followings( )
+    {
+        return $this->hasManyThrough(
+            User::class,
+            UserFollowing::class,
+            'user_id1',
+            'id',
+            'id',
+            'user_id2');
+    }
+    public function followers()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            UserFollowing::class,
+            'user_id2',
+            'id',
+            'id',
+            'user_id1');
+    }
+    public function views()
+    {
+        return $this->belongsToMany(Video::class,'video_views')->withTimestamps();
     }
     //endregion
 
@@ -142,36 +151,12 @@ class User extends Authenticatable
     }
     //endregion
 
-
-    public function followings( )
-    {
-        return $this->hasManyThrough(
-            User::class,
-            UserFollowing::class,
-            'user_id1',
-            'id',
-            'id',
-        'user_id2');
-    }
-
-    public function followers( )
-    {
-        return $this->hasManyThrough(
-            User::class,
-            UserFollowing::class,
-            'user_id2',
-            'id',
-            'id',
-            'user_id1');
-    }
-
     public function follow(User $user)
     {
         return UserFollowing::create([
             'user_id1' => $this->id,
             'user_id2' => $user->id
         ]);
-
     }
 
     public function unfollow(User $user)
@@ -183,10 +168,7 @@ class User extends Authenticatable
 
     }
 
-    public function views()
-    {
-        return $this->belongsToMany(Video::class,'video_views')->withTimestamps();
-    }
+
 }
 
 
