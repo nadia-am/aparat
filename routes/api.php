@@ -201,8 +201,8 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/comment'],function ($router
         'uses'=>'App\Http\Controllers\CommentController@index'
     ]);
     $router->post('/',[
-        'as'=>'tag.create',
-        'uses'=>'App\Http\Controllers\TagController@create'
+        'as'=>'comment.create',
+        'uses'=>'App\Http\Controllers\CommentController@create'
     ]);
 
 
