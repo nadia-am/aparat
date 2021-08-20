@@ -95,7 +95,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
 /**
  * video's Route
  * */
-Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
+Route::group(['prefix'=>'/video'],function ($router){
     $router->match(['post','put'], '/{video:slug}/like',[
         'as'=>'change.like',
         'uses'=>'App\Http\Controllers\VideoController@like'
@@ -112,6 +112,7 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
         'as'=>'video.show',
         'uses'=>'App\Http\Controllers\VideoController@show'
     ]);
+
     Route::group(['middleware'=>['auth:api']],function ($router){
         $router->post('/upload',[
             'as'=>'video.upload',
@@ -133,23 +134,17 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
             'as'=>'change.republish',
             'uses'=>'App\Http\Controllers\VideoController@republish'
         ]);
-        $router->get('/liked',[
+        $router->match(['post','get'],'/liked',[
             'as'=>'change.liked',
             'uses'=>'App\Http\Controllers\VideoController@likedByCurrentUser'
-        ]);
-        $router->get('/statistics',[
-            'as'=>'change.statistics',
-            'uses'=>'App\Http\Controllers\VideoController@statistics'
-        ]);
-        $router->delete('/test',[
-            'as'=>'change.test',
-            'uses'=> function(){
-                dd('test');
-            }
         ]);
         $router->delete('/{video}',[
             'as'=>'change.delete',
             'uses'=>'App\Http\Controllers\VideoController@delete'
+        ]);
+        $router->match(['post','get'], '/{video:slug}/statistic',[
+            'as'=>'change.statistic',
+            'uses'=>'App\Http\Controllers\VideoController@statistics'
         ]);
 
     });

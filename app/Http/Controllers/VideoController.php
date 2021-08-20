@@ -65,7 +65,6 @@ class VideoController extends Controller
 
     public function likedByCurrentUser(LikedByCurrentUserRequest $request)
     {
-        dd('test');
         return VideoService::LikeedByCurrentUserService($request);
     }
 
@@ -74,9 +73,8 @@ class VideoController extends Controller
         return VideoService::deleteVideoService($request);
     }
 
-    public function statistics()
+    public function statistics(videoStatisticsRequset $request)
     {
-        dd('ok');
         return VideoService::videoStatisticsService($request);
     }
 
