@@ -45,22 +45,28 @@ Route::group(['middleware'=>['auth:api']],function ($router){
         'uses'=>'App\Http\Controllers\UserController@changePassword'
     ]);
     // User's
-    $router->match(['post','get'],'/{channel}/follow',[
-        'as'=>'user.follow',
-        'uses'=>'App\Http\Controllers\UserController@follow'
-    ]);
-    $router->match(['post','get'],'/{channel}/unfollow',[
-        'as'=>'user.unfollow',
-        'uses'=>'App\Http\Controllers\UserController@unfollow'
-    ]);
-    $router->get('/followings',[
-        'as'=>'user.followings',
-        'uses'=>'App\Http\Controllers\UserController@followings',
-    ]);
-    $router->get('/followers',[
-        'as'=>'user.followers',
-        'uses'=>'App\Http\Controllers\UserController@followers',
-    ]);
+    Route::group(['prefix'=>'user'],function ($router){
+        $router->match(['post','get'],'/{channel}/follow',[
+            'as'=>'user.follow',
+            'uses'=>'App\Http\Controllers\UserController@follow'
+        ]);
+        $router->match(['post','get'],'/{channel}/unfollow',[
+            'as'=>'user.unfollow',
+            'uses'=>'App\Http\Controllers\UserController@unfollow'
+        ]);
+        $router->get('/followings',[
+            'as'=>'user.followings',
+            'uses'=>'App\Http\Controllers\UserController@followings',
+        ]);
+        $router->get('/followers',[
+            'as'=>'user.followers',
+            'uses'=>'App\Http\Controllers\UserController@followers',
+        ]);
+        $router->delete('/me',[
+            'as'=>'user.unregister',
+            'uses'=>'App\Http\Controllers\UserController@unregister',
+        ]);
+    });
 });
 
 /**
@@ -90,7 +96,6 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/channel'],function ($router
  * video's Route
  * */
 Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
-
     $router->match(['post','put'], '/{video:slug}/like',[
         'as'=>'change.like',
         'uses'=>'App\Http\Controllers\VideoController@like'
@@ -132,6 +137,20 @@ Route::group(['middleware'=>[],'prefix'=>'/video'],function ($router){
             'as'=>'change.liked',
             'uses'=>'App\Http\Controllers\VideoController@likedByCurrentUser'
         ]);
+        $router->get('/statistics',[
+            'as'=>'change.statistics',
+            'uses'=>'App\Http\Controllers\VideoController@statistics'
+        ]);
+        $router->delete('/test',[
+            'as'=>'change.test',
+            'uses'=> function(){
+                dd('test');
+            }
+        ]);
+        $router->delete('/{video}',[
+            'as'=>'change.delete',
+            'uses'=>'App\Http\Controllers\VideoController@delete'
+        ]);
 
     });
 });
@@ -145,7 +164,7 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/category'],function ($route
         'uses'=>'App\Http\Controllers\CategoryController@index'
     ]);
     $router->get('/my',[
-        'as'=>'category.all',
+        'as'=>'category.mine',
         'uses'=>'App\Http\Controllers\CategoryController@my'
     ]);
     $router->post('/',[
@@ -208,5 +227,8 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/comment'],function ($router
         'as'=>'comment.change.state',
         'uses'=>'App\Http\Controllers\CommentController@changeState'
     ]);
-
+    $router->delete('/{comment}',[
+        'as'=>'comment.delete',
+        'uses'=>'App\Http\Controllers\CommentController@delete'
+    ]);
 });

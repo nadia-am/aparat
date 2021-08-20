@@ -21,8 +21,8 @@ class CreatePlaylistsTable extends Migration
                 ->onDelete('cascade');
             $table->string('title',200);
 
-
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

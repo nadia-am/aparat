@@ -25,6 +25,7 @@ class CreateChannelsTable extends Migration
             $table->string('social')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

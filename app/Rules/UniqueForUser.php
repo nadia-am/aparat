@@ -28,7 +28,7 @@ class UniqueForUser implements Rule
      */
     public function __construct($tableName ,$columnName , $userId = null , $userIdField = 'user_id' )
     {
-        //
+
         $this->tableName = $tableName;
         $this->columnName = $columnName;
         $this->userId = $userId == null ?  auth()->id() : $userId;
@@ -44,6 +44,7 @@ class UniqueForUser implements Rule
      */
     public function passes($attribute, $value)
     {
+
         $field = !empty($this->columnName) ? $this->columnName : $attribute;
         $count = DB::table($this->tableName)
             ->where( $field,$value )

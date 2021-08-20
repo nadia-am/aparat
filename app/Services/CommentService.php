@@ -5,9 +5,12 @@ namespace App\Services;
 
 use App\Http\Requests\comment\changeCommentStateRequest;
 use App\Http\Requests\comment\createCommentsRequest;
+use App\Http\Requests\comment\deleteCommentRequest;
 use App\Http\Requests\comment\ListCommentsRequest;
 use App\Models\Comment;
 use App\Models\Video;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommentService  extends BaseService
 {
@@ -42,6 +45,20 @@ class CommentService  extends BaseService
         $comment->state = $request->state;
         $comment->save();
         return response(['message'=>'وضعیت با موفقیت صورت گرفت'],200);
+    }
+
+    public static function delete(deleteCommentRequest $request)
+    {
+        try{
+            DB::beginTransaction();
+            $request->comment->delete();
+            DB::commit();
+            return response(['message'=>'حذف دیدگاه با موفقعیت انجام شد'],200);
+        }catch (\Exception $e){
+            DB::rollBack();
+            Log::error($e);
+            return response(['message'=>'حذف امکان پذیر نشد، مجددا تلاش کنید'],500);
+        }
     }
 
 }

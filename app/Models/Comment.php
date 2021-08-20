@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
     //region config
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $table = "comments";
     protected $fillable = [	'user_id' ,	'video_id',	'parent_id' , 'body' , 'state'];
 
@@ -36,6 +37,10 @@ class Comment extends Model
     {
         return $this->belongsTo(Comment::class , 'parent_id');
     }
+    public function childeren()
+    {
+        return $this->hasMany(Comment::class ,'parent_id');
+    }
     //endregion relation
 
     //region static method
@@ -46,4 +51,14 @@ class Comment extends Model
             ->where('videos.user_id', '=' , $userId );
     }
     //endregion static method
+
+    //region overwrite
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($comment){
+            $comment->childeren()->delete();
+        });
+    }
+    //endregion overwrite
 }

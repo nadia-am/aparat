@@ -12,6 +12,8 @@ use App\Http\Requests\video\showVideoRequest;
 use App\Http\Requests\video\unLikeVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
+use App\Http\Requests\video\videoDeleteRequest;
+use App\Http\Requests\video\videoStatisticsRequset;
 use App\Services\VideoService;
 
 class VideoController extends Controller
@@ -25,6 +27,7 @@ class VideoController extends Controller
     {
         return VideoService::ShowVideoService($request);
     }
+
     public function upload( UploadVideoRequest $request )
     {
         return VideoService::UploadVideoService($request);
@@ -45,8 +48,6 @@ class VideoController extends Controller
         return VideoService::ChangeStateVideoService($request);
     }
 
-
-
     public function republish(RepublishVideoRequest $request)
     {
         return VideoService::RepublishVideoService($request);
@@ -64,7 +65,19 @@ class VideoController extends Controller
 
     public function likedByCurrentUser(LikedByCurrentUserRequest $request)
     {
+        dd('test');
         return VideoService::LikeedByCurrentUserService($request);
+    }
+
+    public function delete(videoDeleteRequest $request)
+    {
+        return VideoService::deleteVideoService($request);
+    }
+
+    public function statistics()
+    {
+        dd('ok');
+        return VideoService::videoStatisticsService($request);
     }
 
 

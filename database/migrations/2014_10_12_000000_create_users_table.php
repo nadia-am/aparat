@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('verify_code',6)->nullable();
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

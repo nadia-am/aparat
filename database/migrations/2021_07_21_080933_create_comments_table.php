@@ -39,6 +39,7 @@ class CreateCommentsTable extends Migration
                 ->on('comments')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->softDeletes();
 
         });
     }

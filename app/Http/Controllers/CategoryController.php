@@ -25,7 +25,7 @@ class CategoryController extends Controller
         return CategoryService::UploadBannerService($request);
     }
 
-    public function create(CreateCategoryRequest $request)//
+    public function create(CreateCategoryRequest $request)
     {
         return CategoryService::CreateCategoryService($request);
     }

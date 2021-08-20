@@ -1,13 +1,10 @@
 <?php
 
-namespace App\Http\Requests\comment;
+namespace App\Http\Requests\user;
 
-use App\Models\Comment;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rules\In;
 
-class changeCommentStateRequest extends FormRequest
+class unregisterUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,7 +13,7 @@ class changeCommentStateRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('changeCommentState',[$this->comment , $this->state]);
+        return true;
     }
 
     /**
@@ -27,7 +24,7 @@ class changeCommentStateRequest extends FormRequest
     public function rules()
     {
         return [
-            'state'=> [ 'required', New In([Comment::STATE_READ,Comment::STATE_ACCEPTED])]
+            //
         ];
     }
 }

@@ -50,6 +50,6 @@ class CategoryIdRequest implements Rule
      */
     public function message()
     {
-        return 'Invalid Category Id';
+        return 'Invalid Category Id for '.$this->category_type;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Video;
+use FFMpeg\Format\Video\X264;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -59,16 +60,27 @@ class ConvertAndAddWaterMarkToUploadedVideoJob implements ShouldQueue
      */
     public function handle()
     {
-        $videoFile = FFMpeg::fromDisk('videos')
-            ->open('/tmp/'.$this->video_id);
-        if ($this->addWatermark){
-//            $filter = new CustomFilter("drawtext=text='x y z'");
-//            $videoFile->addFilter($filter);//TODO add filter
+        $uploadedVideoPath = '/tmp/' . $this->video_id; // video_id => uploaded video id
+        if ($this->video->trashed() || !Video::where('id',$this->video_id)->count() ){
+            Storage::disk('videos')
+                ->delete($uploadedVideoPath);
+            return ;
         }
-        $videoFile->export()
-                    ->toDisk('videos')
-                    ->inFormat(new \FFMpeg\Format\Video\X264());
-        $videoFile->save($this->user_id . '/' .$this->video->slug . '.mp4');
+
+        $videoUploaded = FFMpeg::fromDisk('videos')->open($uploadedVideoPath);
+        $formate = new X264('libmp3lame');
+        //add water mark
+        if ($this->addWatermark){//TODO add water mark
+            $filter = new CustomFilter("drawtext=text='my custom video':fontcolor=red: fontsize=24 ");
+            $videoUploaded = $videoUploaded->addFilter($filter);
+        }
+        $videoFile = $videoUploaded->export()
+                                   ->toDisk('videos')
+                                   ->inFormat($formate);
+        $videoFile->save($this->user_id . '/' . $this->video->slug . '.mp4');
+
+
+
 
         $this->video->duration = $videoFile->getDurationInSeconds();
         $this->video->state = Video::STATE_CONVERTED;

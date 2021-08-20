@@ -26,7 +26,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'title'=>['required','string','min:2','max:100', new UniqueForUser('categories')],
+            'title'=>['required','string','min:2','max:100', new UniqueForUser('categories' ,'title')],
             'icon'=>'nullable|string' ,//TODO determind which package to use for it
             'banner_id'=>['nullable',new UploadedCategoryBannerId()]
         ];

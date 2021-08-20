@@ -33,6 +33,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        $this->registerGates();
         //add passport routes
 //        Passport::routes();
         //set expire time
@@ -41,4 +42,12 @@ class AuthServiceProvider extends ServiceProvider
 
     }
 
+    public function registerGates()
+    {
+        Gate::before(function ($user , $bility){
+            if ($user->isAdmin()){
+                return true;
+            }
+        });
+    }
 }

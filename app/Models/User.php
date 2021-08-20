@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable ,HasApiTokens;
+    use HasFactory, Notifiable ,HasApiTokens,SoftDeletes;
 
     //region model config
     const TYPES_ADMIN = 'admin';
@@ -136,20 +137,37 @@ class User extends Authenticatable
         return $this->belongsToMany(Video::class,'video_views')->withTimestamps();
     }
     //endregion
-
+    //region getter mobile
+        public function setMobileAttribute($value)
+        {
+            $mobile = to_valid_mobile_number($value);
+            $this->attributes['mobile'] = $mobile;
+        }
+        //endregion
+    //region overwrite
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($user){
+            $user->channelVideos()->delete();
+            $user->playlists()->delete();
+        });
+        static::restoring(function ($user){
+            $user->channelVideos()->restore();
+            $user->playlists()->restore();
+        });
+    }
+    //endregion overwrite
+    //region custom method
     public function findForPassport($username)
     {
-        $user = static::where('mobile',$username)->orWhere('email',$username)->first();
+        $user = static::withTrashed()->
+        where('mobile',$username)->
+        orWhere('email',$username)->
+        first();
         return $user;
     }
-
-    //region getter mobile
-    public function setMobileAttribute($value)
-    {
-        $mobile = to_valid_mobile_number($value);
-        $this->attributes['mobile'] = $mobile;
-    }
-    //endregion
+    //endregion custom method
 
     public function follow(User $user)
     {

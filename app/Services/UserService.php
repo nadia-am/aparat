@@ -14,6 +14,7 @@ use App\Http\Requests\user\unFollowUserChannelRequest;
 use App\Http\Requests\user\ChangeEmailRequest;
 use App\Http\Requests\user\ChangeEmailSubmitRequest;
 use App\Http\Requests\user\ChangePasswordRequest;
+use App\Http\Requests\user\unregisterUserRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
@@ -173,5 +174,20 @@ class UserService extends BaseService
     public static function userFollowersService(followingUserRequest $request)
     {
         return $request->user()->followers()->paginate();
+    }
+
+    public static function unregisterService(unregisterUserRequest $request)
+    {
+        try{
+            DB::beginTransaction();
+            $request->user()->delete();
+            DB::commit();
+            return response(['message'=>'کاربر با موفقیت غیر فعال شد، برای فعالسازی مجددا یکبار در سیستم ورود کنید'],200);
+        }catch (\Exception $e){
+            DB::rollBack();
+            Log::error($e);
+            return response(['message'=>'حذف امکان پذیر نشد، مجددا تلاش کنید'],500);
+        }
+
     }
 }

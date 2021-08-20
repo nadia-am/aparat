@@ -8,6 +8,7 @@ use App\Http\Requests\user\unFollowUserChannelRequest;
 use App\Http\Requests\user\ChangeEmailRequest;
 use App\Http\Requests\user\ChangeEmailSubmitRequest;
 use App\Http\Requests\user\ChangePasswordRequest;
+use App\Http\Requests\user\unregisterUserRequest;
 use App\Services\UserService;
 
 class UserController extends Controller
@@ -22,7 +23,6 @@ class UserController extends Controller
     {
         return UserService::changeEmail($request);
     }
-
     /**
      * confirm change user's email
      * @param ChangeEmailSubmitRequest $request
@@ -32,22 +32,18 @@ class UserController extends Controller
     {
         return UserService::changeEmailSubmit($request);
     }
-
     public function changePassword(ChangePasswordRequest $request)
     {
         return UserService::changePassword($request);
     }
-
     public function follow(FollowUserChannelRequest $request)
     {
         return UserService::FollowService($request);
     }
-
     public function unfollow(unFollowUserChannelRequest $request)
     {
         return UserService::unFollowService($request);
     }
-
     public function followings(followingUserRequest $request)
     {
         return UserService::userFollowingService($request);
@@ -57,5 +53,9 @@ class UserController extends Controller
     {
         return UserService::userFollowersService($request);
 
+    }
+    public function unregister(unregisterUserRequest $request)
+    {
+        return UserService::unregisterService($request);
     }
 }

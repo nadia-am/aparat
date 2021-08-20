@@ -45,6 +45,7 @@ class VideoPolicy
         }
         return false;
     }
+
     public function unlike(User $user = null , Video $video=null)
     {
         $conditions = [
@@ -57,9 +58,18 @@ class VideoPolicy
         return VideoFavourit::where($conditions)->count() ;
     }
 
-
     public function getLikedList(User $user, Video $video=null)
     {
         return true;
+    }
+
+    public function delete(User $user, Video $video)
+    {
+        return $user->id == $video->user_id;
+    }
+
+    public function viewStatistics(User $user, Video $video)
+    {
+
     }
 }

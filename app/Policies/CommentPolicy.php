@@ -10,13 +10,18 @@ class CommentPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function changeCommentState(User $user , Comment $comment)
+    public function changeCommentState(User $user , Comment $comment ,$state = null)
     {
+        return  (
+                ( ( $comment->state == Comment::STATE_PENDING ) && ($state == Comment::STATE_READ || $state == Comment::STATE_ACCEPTED))
+                ||
+                (  ( $comment->state == Comment::STATE_READ ) && ($state == Comment::STATE_ACCEPTED))
+            ) &&
+            $user->channelVideos()->where('id', $comment->vido_id)->count();
+    }
 
+    public function deleteComment(User $user, Comment $comment)
+    {
+        return $user->channelVideos()->where('id', $comment->vido_id)->count();
     }
 }

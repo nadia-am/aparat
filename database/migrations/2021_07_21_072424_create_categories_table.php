@@ -26,6 +26,7 @@ class CreateCategoriesTable extends Migration
                 ->on('users')
                 ->onDelete('set null')
                 ->onUpdate('cascade');
+            $table->softDeletes();
         });
     }
 

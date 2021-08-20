@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Events\DeleteVideo;
 use App\Events\UploadNewVideo;
 use App\Events\VisitVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
@@ -15,6 +16,8 @@ use App\Http\Requests\video\showVideoRequest;
 use App\Http\Requests\video\unLikeVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
+use App\Http\Requests\video\videoDeleteRequest;
+use App\Http\Requests\video\videoStatisticsRequset;
 use App\Models\Playlist;
 use App\Models\Video;
 use App\Models\VideoFavourit;
@@ -51,7 +54,7 @@ class VideoService  extends BaseService
         try {
             $video = $request->file('video');
             $fileName =  time() . Str::random(10);
-            Storage::disk('videos')->put( '/tmp/' . $fileName,$video->get() );
+            Storage::disk('videos')->put( '/tmp/' . $fileName , $video->get() );
 
             return response([  'video'=> $fileName ],200);
         }catch (\Exception $e){
@@ -77,7 +80,6 @@ class VideoService  extends BaseService
     {
         try {
             DB::beginTransaction();
-
             //save video in db
             $video = Video::create([
                 'user_id'               =>auth()->id() ,
@@ -100,10 +102,15 @@ class VideoService  extends BaseService
 
             //save video & banner in public folder
             event(new UploadNewVideo($video , $request));
+
             if (!empty($request->banner )){
                 $banner_name = $video->slug . '-banner';
                 $oldBannerPath = public_path('videos/tmp/'.$request->banner);
                 $newBannerPath = public_path('videos/'.  auth()->id() . '/' . $banner_name);
+//                Storage::move($oldBannerPath, $newBannerPath);
+                if(!File::isDirectory( public_path('videos/'.  auth()->id() . '/'))){
+                    File::makeDirectory( public_path('videos/'.  auth()->id() . '/'), 0777, true, true);
+                }
                 File::move($oldBannerPath, $newBannerPath);
             }
             //add playlist to video
@@ -115,12 +122,12 @@ class VideoService  extends BaseService
             if (!empty($request->tags)){
                 $video->tags()->attach($request->tags);
             }
-
             DB::commit();
             return response($video,200);
         }catch (\Exception $e){
             Log::error($e);
             DB::rollBack();
+            dd($e);
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
 
@@ -157,7 +164,7 @@ class VideoService  extends BaseService
         VideoFavourit::create([
             'user_id'=> auth('api')->id(),
             'user_ip'=> client_ip(),
-            'video_id'=> $request->video
+            'video_id'=> $request->video->id
         ]);
         return response(['با موفقعیت ثبت شد'],200);
     }
@@ -188,6 +195,26 @@ class VideoService  extends BaseService
     {
         event(new VisitVideo($request->video));
         return $request->video;
+    }
+
+    public static function deleteVideoService(videoDeleteRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $request->video->forceDelete();
+            event(new DeleteVideo($request->video));
+            DB::commit();
+            return response(['message'=>'حذف با موفقیت انجام شد'],200);
+        }catch (\Exception $e){
+            DB::rollBack();
+            Log::error($e);
+            return response(['message'=>'حذف انجام نشد'],500);
+        }
+    }
+
+    public static function videoStatisticsService(videoStatisticsRequset $request)
+    {
+        dd('statistics');
     }
 
 
