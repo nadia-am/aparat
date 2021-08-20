@@ -87,7 +87,7 @@ class ChannelService  extends BaseService
 
     public static function ShowStatistic(ChannelStatisticRequest $request)
     {
-
+        $fromDate = now()->subDays($request->get('last_n_days' ,7 ))->toDateString();
         $data = [
             'views'=>[],
             'total_views'=>0,
@@ -97,13 +97,14 @@ class ChannelService  extends BaseService
                 ->selectRaw('comments.*')
                 ->count(),//TODO get unaccepted comment
         ];
-        $videos = Video::views($request->user()->id)
-        ->selectRaw('date(video_views.created_at) as date , count(*) as views')
-        ->groupBy(DB::raw('date(video_views.created_at)'));
-        $videos->each(function ($item) use (&$data){
-            $data['total_views'] += $item->views;
-            $data['views'][$item->date] = $item->views;
-        });
+        Video::views($request->user()->id)
+            ->whereRaw("date(video_views.created_at) >= '{$fromDate}' ")
+            ->selectRaw('date(video_views.created_at) as date , count(*) as views')
+            ->groupBy(DB::raw('date(video_views.created_at)'))
+            ->each(function ($item) use (&$data){
+                $data['total_views'] += $item->views;
+                $data['views'][$item->date] = $item->views;
+            });
         return $data;
     }
 

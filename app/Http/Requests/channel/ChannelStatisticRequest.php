@@ -24,7 +24,7 @@ class ChannelStatisticRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'last_n_days'=>' nullable|in:7,14,30,60'
         ];
     }
 }

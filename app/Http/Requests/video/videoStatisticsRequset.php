@@ -14,8 +14,8 @@ class videoStatisticsRequset extends FormRequest
      */
     public function authorize()
     {
-//        return Gate::allows('viewStatistics',$this->video);
-        return true;
+        return Gate::allows('viewStatistics',$this->video);
+//        return true;
     }
 
     /**
@@ -26,7 +26,8 @@ class videoStatisticsRequset extends FormRequest
     public function rules()
     {
         return [
-            //
+//            'from_date'=>'required|date'
+            'last_n_days'=>' nullable|in:7,14,30,60'
         ];
     }
 }

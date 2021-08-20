@@ -70,6 +70,13 @@ class VideoPolicy
 
     public function viewStatistics(User $user, Video $video)
     {
-
+        return $user->id == $video->user_id;
     }
+
+    public function update(User $user, Video $video)
+    {
+        return $user->id == $video->user_id;
+    }
+
+
 }

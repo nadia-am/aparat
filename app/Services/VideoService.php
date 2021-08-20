@@ -14,6 +14,7 @@ use App\Http\Requests\video\LikeVideoRequest;
 use App\Http\Requests\video\RepublishVideoRequest;
 use App\Http\Requests\video\showVideoRequest;
 use App\Http\Requests\video\unLikeVideoRequest;
+use App\Http\Requests\video\updateVideoRequest;
 use App\Http\Requests\video\UploadVideoBannerRequest;
 use App\Http\Requests\video\UploadVideoRequest;
 use App\Http\Requests\video\videoDeleteRequest;
@@ -130,8 +131,6 @@ class VideoService  extends BaseService
             dd($e);
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
-
-
     }
 
     public static function ChangeStateVideoService(ChangeStateVideoRequest $request)
@@ -213,8 +212,56 @@ class VideoService  extends BaseService
     }
 
     public static function videoStatisticsService(videoStatisticsRequset $request)
+    {//last_n_days
+        $fromDate = now()->subDays($request->get('last_n_days' ,7 ))->toDateString();
+        $data = [
+            'views'=>[],
+            'total_views'=>0
+        ];
+        Video::views(auth()->id())
+            ->where('videos.id',$request->video->id)
+            ->whereRaw("date(video_views.created_at) >= '{$fromDate}' ")
+            ->selectRaw('date(video_views.created_at) as date , count(*) as views')
+            ->groupBy(DB::raw('date(video_views.created_at)'))
+            ->get()
+            ->each(function ($item) use (&$data) {
+                $data['total_views'] += $item->views;
+                $data['views'][$item->date] = $item->views;
+            });
+        return $data;
+    }
+
+    public static function UpdateVideoService(updateVideoRequest $request)
     {
-        dd('statistics');
+//        dd($request->validated());
+        try {
+            DB::beginTransaction();
+            $video = $request->video;
+            //save video in db
+            if ($request->has('title')) $video->title = $request->title;
+            if ($request->has('info')) $video->info = $request->info;
+            if ($request->has('category')) $video->category_id = $request->category;
+            if ($request->has('channel_category')) $video->channel_category_id = $request->channel_category;
+            if ($request->has('enable_comments')) $video->enable_comments = $request->enable_comments;
+            if (!empty($request->banner )){
+                Storage::disk('videos')
+                    ->delete(auth()->id() . '/' . $video->banner);
+                Storage::disk('videos')
+                    ->move('/tmp/'. $request->banner , auth()->id() . '/' . $video->banner);
+            }
+
+            //add tags to video
+            if (!empty($request->tags)){
+                $video->tags()->sync($request->tags);
+            }
+            $video->save();
+            DB::commit();
+            return response($video,200);
+        }catch (\Exception $e){
+            Log::error($e);
+            DB::rollBack();
+            return response(['message'=>'خطایی رخ داده است!'],500);
+        }
     }
 
 

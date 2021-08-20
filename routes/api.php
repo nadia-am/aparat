@@ -126,6 +126,10 @@ Route::group(['prefix'=>'/video'],function ($router){
             'as'=>'video.create',
             'uses'=>'App\Http\Controllers\VideoController@create'
         ]);
+        $router->put('/{video}',[
+            'as'=>'video.update',
+            'uses'=>'App\Http\Controllers\VideoController@update'
+        ]);
         $router->put('/{video:slug}/state',[
             'as'=>'change.state',
             'uses'=>'App\Http\Controllers\VideoController@changeState'
@@ -142,7 +146,7 @@ Route::group(['prefix'=>'/video'],function ($router){
             'as'=>'change.delete',
             'uses'=>'App\Http\Controllers\VideoController@delete'
         ]);
-        $router->match(['post','get'], '/{video:slug}/statistic',[
+        $router->match(['post','get'], '/{video}/statistic',[
             'as'=>'change.statistic',
             'uses'=>'App\Http\Controllers\VideoController@statistics'
         ]);

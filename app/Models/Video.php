@@ -61,6 +61,7 @@ class Video extends Model
             $conditions['user_ip'] = client_ip();
         }
         $date['liked'] = VideoFavourit::where($conditions)->count();
+        $date['tag'] = $this->tags;
         return $date;
     }
     //endregion Overwrite
@@ -141,6 +142,7 @@ class Video extends Model
     }
 
     /**
+     * get my videos views
      * @param $userId
      * @return Builder
      */
@@ -149,11 +151,6 @@ class Video extends Model
         return static::where('videos.user_id',$userId)
             ->join('video_views','videos.id','=','video_views.video_id');
     }
-    /**
-     * @param $userId
-     * @return Builder
-     */
-
     //endregion Custom Static method
 
 
