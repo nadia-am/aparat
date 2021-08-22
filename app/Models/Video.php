@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class Video extends Model
 {
@@ -53,23 +55,32 @@ class Video extends Model
     public function toArray()
     {
         $date = parent::toArray();
-        $conditions = [
-            'user_id'=> auth('api')->check()? auth()->id() : null,
-            'video_id'=> $this->id,
-        ];
-        if (!auth('api')->check()){
-            $conditions['user_ip'] = client_ip();
-        }
-        $date['liked'] = VideoFavourit::where($conditions)->count();
-        $date['tag'] = $this->tags;
+
+        $date['video_link'] = $this->video_link;
+        $date['banner_link'] = $this->banner_link;
+        $date['views'] = VideoView::where(['video_id'=> $this->id])->count();
+
         return $date;
     }
     //endregion Overwrite
 
+    //region getter
+    public function getVideoLinkAttribute()
+    {
+        return Storage::disk('videos')
+            ->url( $this->user_id . '/' . $this->slug . '.mp4' );
+    }
+    public function getBannerLinkAttribute()
+    {
+        return Storage::disk('videos')
+            ->url( $this->user_id . '/' . $this->slug . '-banner' );
+    }
+    //endregion getter
+
     //region relations
     public function playlist()
     {
-        return $this->belongsToMany(Playlist::class,'playlist_videos')->first();
+        return $this->belongsToMany(Playlist::class,'playlist_videos');
     }
     public function tags()
     {
@@ -92,6 +103,23 @@ class Video extends Model
     {
         return static::where('videos.user_id',$userId)
             ->join('comments','videos.id','=','comments.video_id');
+    }
+    public function related()
+    {
+        return static::selectRaw( 'COUNT(*) related_tags, videos.*' )
+            ->leftJoin('video_tags','videos.id','=','video_tags.video_id')
+            ->whereRaw('videos.id !=' . $this->id)
+            ->whereRaw("videos.state = '". self::STATE_ACCEPTED . " ' ")
+            ->whereIn(DB::raw('video_tags.tag_id') , function ($query){
+                $query->selectRaw('video_tags.tag_id')
+                    ->from('videos')
+                    ->leftJoin('video_tags','videos.id','=','video_tags.video_id')
+                    ->whereRaw('videos.id =' . $this->id);
+            })
+            ->groupBy(DB::raw('videos.id'))
+            ->orderBy('related_tags','desc');
+
+
     }
     //endregion relations
 

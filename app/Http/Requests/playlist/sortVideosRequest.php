@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\playlist;
 
+use App\Rules\sortablePlaylistVideosRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class sortVideosRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class sortVideosRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Gate::allows('sortVideos', $this->playlist);
     }
 
     /**
@@ -24,7 +26,7 @@ class sortVideosRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'videos'=>['required' , new sortablePlaylistVideosRule($this->playlist) ]
         ];
     }
 }

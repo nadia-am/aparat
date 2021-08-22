@@ -8,6 +8,7 @@ use App\Events\UploadNewVideo;
 use App\Events\VisitVideo;
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
+use App\Http\Requests\video\favouritesRequest;
 use App\Http\Requests\video\GetvideoListRequest;
 use App\Http\Requests\video\LikedByCurrentUserRequest;
 use App\Http\Requests\video\LikeVideoRequest;
@@ -100,10 +101,8 @@ class VideoService  extends BaseService
             $video->slug = uniqe_id( auth()->id());
             $video->banner =  $video->slug . '-banner';
             $video->save();
-
             //save video & banner in public folder
             event(new UploadNewVideo($video , $request));
-
             if (!empty($request->banner )){
                 $banner_name = $video->slug . '-banner';
                 $oldBannerPath = public_path('videos/tmp/'.$request->banner);
@@ -128,7 +127,6 @@ class VideoService  extends BaseService
         }catch (\Exception $e){
             Log::error($e);
             DB::rollBack();
-            dd($e);
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
     }
@@ -193,7 +191,23 @@ class VideoService  extends BaseService
     public static function ShowVideoService(showVideoRequest $request)
     {
         event(new VisitVideo($request->video));
-        return $request->video;
+        $conditions = [
+            'user_id'=> auth('api')->check()? auth()->id() : null,
+            'video_id'=> $request->video->id,
+        ];
+        if (!auth('api')->check()){
+            $conditions['user_ip'] = client_ip();
+        }
+        $videoData = $request->video->toArray();
+        $videoData['liked'] = VideoFavourit::where($conditions)->count();
+        $videoData['tags'] = $request->video->tags;
+        $videoData['comments'] = sort_comments($request->video->comments);
+        $videoData['related_videos'] = $request->video->related()->take(5)->get();
+        $videoData['playlist'] = $request->video
+            ->playlist()
+            ->with('videos')
+            ->first();
+        return $videoData;
     }
 
     public static function deleteVideoService(videoDeleteRequest $request)
@@ -262,6 +276,27 @@ class VideoService  extends BaseService
             DB::rollBack();
             return response(['message'=>'خطایی رخ داده است!'],500);
         }
+    }
+
+    public static function videoFavouritesService(favouritesRequest $request)
+    {
+        $videos= $request
+            ->user()
+            ->favouritVideos()
+            ->selectRaw('videos.* , channels.name as channel_name')
+            ->leftJoin('channels','channels.user_id','=' , 'videos.user_id')
+            ->get();
+        return [
+            'videos'                =>  $videos,
+            'total_fav_videos'      =>  count($videos),
+            'total_videos'          => $request->user()->channelVideos()->count() ,
+            'total_comments'        =>  Video::channelComments($request->user()->id)
+                                        ->selectRaw('comments.*')
+                                        ->count(),//TODO just get accepted comment
+            'total_views'           => Video::views($request->user()->id)->count()
+
+
+        ];
     }
 
 

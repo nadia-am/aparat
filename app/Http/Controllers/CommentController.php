@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\comment\changeCommentStateRequest;
 use App\Http\Requests\comment\createCommentsRequest;
 use App\Http\Requests\comment\deleteCommentRequest;
+use App\Http\Requests\comment\getVideoCommentsRequest;
 use App\Http\Requests\comment\ListCommentsRequest;
 use App\Services\CommentService;
 
@@ -28,4 +29,10 @@ class CommentController extends Controller
     {
         return CommentService::delete($request);
     }
+
+    public function videoComments(getVideoCommentsRequest $request)
+    {
+        return CommentService::videoCommentsService($request);
+    }
+
 }

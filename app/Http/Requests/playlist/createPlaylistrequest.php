@@ -25,7 +25,7 @@ class createPlaylistrequest extends FormRequest
     public function rules()
     {
         return [
-             'title'=>['required','string','min:2','max:200', new UniqueForUser('categories')]
+             'title'=>['required','string','min:2','max:200', new UniqueForUser('categories','title')]
         ];
     }
 }

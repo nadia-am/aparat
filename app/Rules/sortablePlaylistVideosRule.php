@@ -2,18 +2,25 @@
 
 namespace App\Rules;
 
+use App\Models\Playlist;
 use Illuminate\Contracts\Validation\Rule;
 
 class sortablePlaylistVideosRule implements Rule
 {
     /**
+     * @var Playlist
+     */
+    private $playlist;
+
+    /**
      * Create a new rule instance.
      *
-     * @return void
+     * @param Playlist $playlist
      */
-    public function __construct()
+    public function __construct(Playlist $playlist)
     {
         //
+        $this->playlist = $playlist;
     }
 
     /**
@@ -25,7 +32,14 @@ class sortablePlaylistVideosRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        //
+        if (is_array($value)){
+            $videos_id = $this->playlist->videos()->pluck('videos.id')->toArray();
+            sort($videos_id);
+            $value = array_map('intval',$value);
+            sort($value);
+            return $value== $videos_id;
+        }
+        return false;
     }
 
     /**
@@ -35,6 +49,6 @@ class sortablePlaylistVideosRule implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'video list is not valid for this playlist.';
     }
 }

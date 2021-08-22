@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\video\ChangeStateVideoRequest;
 use App\Http\Requests\video\createVideoRequest;
+use App\Http\Requests\video\favouritesRequest;
+use App\Http\Requests\video\getVideoCommentsRequest;
 use App\Http\Requests\video\GetvideoListRequest;
 use App\Http\Requests\video\LikedByCurrentUserRequest;
 use App\Http\Requests\video\LikeVideoRequest;
@@ -84,5 +86,9 @@ class VideoController extends Controller
         return VideoService::videoStatisticsService($request);
     }
 
+    public function favourites(favouritesRequest $request)
+    {
+        return VideoService::videoFavouritesService($request);
+    }
 
 }

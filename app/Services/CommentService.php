@@ -6,6 +6,7 @@ namespace App\Services;
 use App\Http\Requests\comment\changeCommentStateRequest;
 use App\Http\Requests\comment\createCommentsRequest;
 use App\Http\Requests\comment\deleteCommentRequest;
+use App\Http\Requests\comment\getVideoCommentsRequest;
 use App\Http\Requests\comment\ListCommentsRequest;
 use App\Models\Comment;
 use App\Models\Video;
@@ -59,6 +60,11 @@ class CommentService  extends BaseService
             Log::error($e);
             return response(['message'=>'حذف امکان پذیر نشد، مجددا تلاش کنید'],500);
         }
+    }
+
+    public static function videoCommentsService(getVideoCommentsRequest $request)
+    {
+        return $request->video->comments;
     }
 
 }

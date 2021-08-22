@@ -108,11 +108,10 @@ Route::group(['prefix'=>'/video'],function ($router){
         'as'=>'video.list',
         'uses'=>'App\Http\Controllers\VideoController@getList'
     ]);
-    $router->get('/{video:slug}',[
-        'as'=>'video.show',
-        'uses'=>'App\Http\Controllers\VideoController@show'
+    $router->get('/{video:slug}/comments',[
+        'as'=>'video.comments',
+        'uses'=>'App\Http\Controllers\CommentController@videoComments'
     ]);
-
     Route::group(['middleware'=>['auth:api']],function ($router){
         $router->post('/upload',[
             'as'=>'video.upload',
@@ -150,8 +149,15 @@ Route::group(['prefix'=>'/video'],function ($router){
             'as'=>'change.statistic',
             'uses'=>'App\Http\Controllers\VideoController@statistics'
         ]);
-
+        $router->get( '/favourites',[
+            'as'=>'change.favourites',
+            'uses'=>'App\Http\Controllers\VideoController@favourites'
+        ]);
     });
+    $router->get('/{video:slug}',[
+        'as'=>'video.show',
+        'uses'=>'App\Http\Controllers\VideoController@show'
+    ]);
 });
 
 /**
@@ -188,10 +194,23 @@ Route::group(['middleware'=>['auth:api'],'prefix'=>'/playlist'],function ($route
         'as'=>'playlist.all',
         'uses'=>'App\Http\Controllers\PlaylistController@my'
     ]);
+    $router->get('/{playlist}',[
+        'as'=>'playlist.show',
+        'uses'=>'App\Http\Controllers\PlaylistController@show'
+    ]);
     $router->post('/',[
         'as'=>'playlist.create',
         'uses'=>'App\Http\Controllers\PlaylistController@create'
     ]);
+    $router->match(['put','post'],'/{playlist}/sort',[
+        'as'=>'playlist.sort',
+        'uses'=>'App\Http\Controllers\PlaylistController@sortVideos'
+    ]);
+    $router->match(['put','post'],'/{playlist}/{video}',[
+        'as'=>'playlist.add-video',
+        'uses'=>'App\Http\Controllers\PlaylistController@add_video'
+    ]);
+
 });
 
 /**

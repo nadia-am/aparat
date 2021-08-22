@@ -55,6 +55,21 @@ if (!function_exists('client_ip')) {
     }
 }
 
+if (!function_exists('sort_comments')) {
+    function sort_comments($comments , $parent_id = null)
+    {
+        $result =[];
+        foreach ($comments as $comment){
+            if ($comment->parent_id == $parent_id ){
+                $data = $comment->toArray();
+                $data['childeren'] = sort_comments($comments , $comment->id );
+                $result[] = $data;
+            }
+        }
+        return $result;
+    }
+}
+
 
 
 

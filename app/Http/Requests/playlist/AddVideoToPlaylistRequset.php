@@ -3,6 +3,7 @@
 namespace App\Http\Requests\playlist;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class AddVideoToPlaylistRequset extends FormRequest
 {
@@ -13,7 +14,7 @@ class AddVideoToPlaylistRequset extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Gate::allows('addVideo' , [$this->video , $this->playlist] );
     }
 
     /**
